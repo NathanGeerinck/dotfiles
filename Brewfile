@@ -8,16 +8,10 @@ tap 'homebrew/bundle'
 # Binaries
 brew 'awscli'
 brew 'bash' # Bash 4
-# brew 'bat'
-brew 'coreutils' # Those that come with macOS are outdated
 brew 'git'
-# brew 'gnupg2'
 brew 'grep'
 brew 'mackup'
-# brew 'mas'
-# brew 'pkg-config' # https://github.com/driesvints/dotfiles/issues/20
-# brew 'trash'
-# brew 'tree'
+brew 'mas'
 brew 'zsh'
 brew 'zsh-completions'
 
@@ -55,13 +49,3 @@ cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
 
 # Mac App Store
-mas '1Password', id: 1333542190
-mas 'Byword', id: 420212497
-mas 'Giphy Capture', id: 668208984
-mas 'Keynote', id: 409183694
-mas 'Sip', id: 507257563
-mas 'Spark', id: 1176895641
-mas 'The Unarchiver', id: 425424353
-mas 'Things', id: 904280696
-mas 'Tweetbot', id: 1384080005
-mas 'WhatsApp', id: 1147396723 
