@@ -33,11 +33,11 @@ cask 'microsoft-office'
 cask 'phpstorm'
 cask 'postman'
 cask 'pycharm'
-cask 'sequel-pro'
 cask 'slack'
 cask 'stremio'
 cask 'spotify'
 cask 'tower2'
+cask 'tableplus'
 
 # Fonts
 cask 'font-lato'
@@ -47,5 +47,3 @@ cask 'font-source-code-pro-for-powerline'
 cask 'font-source-code-pro'
 cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
-
-# Mac App Store
