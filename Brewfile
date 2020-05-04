@@ -38,7 +38,7 @@ cask 'stremio'
 cask 'spotify'
 cask 'tower2'
 cask 'tableplus'
-cask 'dropshare'
+cask 'cleanshot'
 
 # Fonts
 cask 'font-lato'
