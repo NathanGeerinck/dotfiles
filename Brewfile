@@ -36,9 +36,9 @@ cask 'pycharm'
 cask 'slack'
 cask 'stremio'
 cask 'spotify'
-cask 'tower2'
 cask 'tableplus'
 cask 'cleanshot'
+cask 'raycast'
 
 # Fonts
 cask 'font-lato'
@@ -48,3 +48,6 @@ cask 'font-source-code-pro-for-powerline'
 cask 'font-source-code-pro'
 cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
+
+# Tallieu & Tallieu
+cask 'virtualbox'

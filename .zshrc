@@ -1,3 +1,7 @@
+# NVM
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+
 # Path to your dotfiles.
 export DOTFILES=$HOME/.dotfiles
 
