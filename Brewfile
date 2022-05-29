@@ -39,6 +39,7 @@ cask 'spotify'
 cask 'tableplus'
 cask 'cleanshot'
 cask 'raycast'
+cask 'spark'
 
 # Fonts
 cask 'font-lato'
