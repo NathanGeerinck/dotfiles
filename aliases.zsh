@@ -1,5 +1,9 @@
+# ZSH
+alias reload=". ~/.zshrc && echo 'ZSH config reloaded from ~/.zshrc'"
+
 # PHPStorm
 alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
+alias phpstorm-aep='open -a /Applications/PhpStorm\ 2022.3\ EAP.app "`pwd`"'
 
 # VSCode
 alias code='open -a "/Applications/Visual Studio Code.app" "`pwd`"'
@@ -35,5 +39,4 @@ tntclone() {
 dry-boot() {
   vagrant up
   vagrant ssh
-  cd default
 }
