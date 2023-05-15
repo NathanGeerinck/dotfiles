@@ -3,7 +3,6 @@ alias reload=". ~/.zshrc && echo 'ZSH config reloaded from ~/.zshrc'"
 
 # PHPStorm
 alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
-alias phpstorm-aep='open -a /Applications/PhpStorm\ 2022.3\ EAP.app "`pwd`"'
 
 # VSCode
 alias code='open -a "/Applications/Visual Studio Code.app" "`pwd`"'
@@ -32,11 +31,11 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 
 # Clone a repository from Bitbucket
 tntclone() {
-  git clone https://nathangeerincktnt@bitbucket.org/tallieu/$1.git
-}
+  if [[ $2 =~ ^(-gh|--github) ]]
+  then
+      git clone https://github.com/TallieuTallieu/$1.git
+      return
+  fi
 
-# Start a DRY application
-dry-boot() {
-  vagrant up
-  vagrant ssh
+  git clone https://nathangeerincktnt@bitbucket.org/tallieu/$1.git
 }
