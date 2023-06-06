@@ -7,7 +7,7 @@ tap 'homebrew/bundle'
 
 # Binaries
 brew 'awscli'
-brew 'bash' # Bash 4
+brew 'bash'
 brew 'git'
 brew 'grep'
 brew 'mackup'
@@ -38,7 +38,7 @@ cask 'discord'
 cask '1password'
 cask 'synology-drive'
 cask 'hey'
-# cask 'raycast'
+cask 'raycast'
 cask 'stremio'
 cask 'spotify'
 
@@ -52,4 +52,4 @@ cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
 
 # Tallieu & Tallieu
-cask 'virtualbox'
+cask 'docker'
