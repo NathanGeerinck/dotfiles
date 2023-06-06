@@ -1,0 +1,2 @@
+# Nathan's Dotfiles
+This repository  contains my personal Dotfiles. It helps me to install and maintain the applications that are running on my Mac. I started to use Dotfiles when I saw the [blogpost](https://driesvints.com/blog/getting-started-with-dotfiles) of Dries Vints.
