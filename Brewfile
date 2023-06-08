@@ -26,7 +26,6 @@ brew 'python'
 # Apps
 cask 'adobe-creative-cloud'
 cask 'iterm2'
-cask 'java'
 cask 'phpstorm'
 cask 'postman'
 cask 'tower'
@@ -41,6 +40,8 @@ cask 'hey'
 cask 'raycast'
 cask 'stremio'
 cask 'spotify'
+cask 'docker'
+cask 'figma'
 
 # Fonts
 cask 'font-lato'
@@ -50,6 +51,3 @@ cask 'font-source-code-pro-for-powerline'
 cask 'font-source-code-pro'
 cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
-
-# Tallieu & Tallieu
-cask 'docker'
