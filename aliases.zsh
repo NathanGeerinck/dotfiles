@@ -8,6 +8,7 @@ alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
 alias code='open -a "/Applications/Visual Studio Code.app" "`pwd`"'
 
 # PHP
+alias switch-php82="brew unlink php@8.2 && brew link --overwrite --force php"
 alias switch-php81="brew unlink php@8.1 && brew link --overwrite --force php"
 alias switch-php80="brew unlink php@8.0 && brew link --overwrite --force php"
 alias switch-php74="brew unlink php@7.4 && brew link --overwrite --force php"
@@ -24,9 +25,8 @@ alias commit="git add . && git commit -m 'wip'"
 # Also, clear Apple’s System Logs to improve shell startup speed
 alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
 
-## Tallieu & Tallieu
-
-# Clone a repository from Bitbucket
+# Tallieu & Tallieu
+## Clone a repository from Bitbucket
 tntclone() {
   if [[ $2 =~ ^(-gh|--github) ]]
   then
