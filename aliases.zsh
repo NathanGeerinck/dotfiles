@@ -22,9 +22,12 @@ alias push="git push"
 alias commit="git add . && git commit -m 'wip'"
 
 # Docker
-docker-ssh() {
+dssh() {
   docker compose exec -it $1 bash
 }
+
+alias dcu="docker compose up"
+alias dps="docker ps"
 
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed
