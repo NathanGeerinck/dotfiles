@@ -22,6 +22,7 @@ brew 'mysql'
 brew 'node'
 brew 'redis'
 brew 'python'
+brew 'yarn'
 
 # Apps
 cask 'adobe-creative-cloud'
@@ -40,8 +41,11 @@ cask 'hey'
 cask 'raycast'
 cask 'stremio'
 cask 'spotify'
-cask 'docker'
 cask 'figma'
+
+# Docker
+cask 'docker'
+cask 'karabiner-elements'
 
 # Fonts
 cask 'font-lato'
