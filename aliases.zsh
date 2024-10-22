@@ -39,11 +39,12 @@ tnt-clone() {
   source ~/.dotfiles/tallieu/clone.sh
 }
 
-## Sync Obsidian notes
+## Pull Obsidian notes
 tnt-pull-notes() {
   source ~/.dotfiles/tallieu/pull-notes.sh
 }
 
+## Sync Obsidian notes
 tnt-sync-notes() {
   source ~/.dotfiles/tallieu/sync-notes.sh
 }
