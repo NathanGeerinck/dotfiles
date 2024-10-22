@@ -44,3 +44,12 @@ tntclone() {
 
   git clone https://nathangeerincktnt@bitbucket.org/tallieu/$1.git
 }
+
+## Sync Obsidian notes
+tnt-pull-notes() {
+  source ~/.dotfiles/tallieu/pull-notes.sh
+}
+
+tnt-sync-notes() {
+  source ~/.dotfiles/tallieu/sync-notes.sh
+}
