@@ -34,15 +34,9 @@ alias dps="docker ps"
 alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
 
 # Tallieu & Tallieu
-## Clone a repository from Bitbucket
-tntclone() {
-  if [[ $2 =~ ^(-gh|--github) ]]
-  then
-      git clone https://github.com/TallieuTallieu/$1.git
-      return
-  fi
-
-  git clone https://nathangeerincktnt@bitbucket.org/tallieu/$1.git
+## Clone a repository from Bitbucket or Github
+tnt-clone() {
+  source ~/.dotfiles/tallieu/clone.sh
 }
 
 ## Sync Obsidian notes
