@@ -42,6 +42,7 @@ cask 'raycast'
 cask 'stremio'
 cask 'spotify'
 cask 'figma'
+cask 'obsidian'
 
 # Docker
 cask 'docker'
