@@ -36,16 +36,10 @@ alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo 
 
 # Tallieu & Tallieu
 ## Clone a repository from Bitbucket or Github
-tnt-clone() {
-  source ~/.dotfiles/tallieu/clone.sh
-}
+alias tnt-clone="source ~/.dotfiles/tallieu/clone.sh"
 
 ## Pull Obsidian notes
-tnt-pull-notes() {
-  source ~/.dotfiles/tallieu/pull-notes.sh
-}
+alias tnt-pull-notes="source ~/.dotfiles/tallieu/pull-notes.sh"
 
 ## Sync Obsidian notes
-tnt-sync-notes() {
-  source ~/.dotfiles/tallieu/sync-notes.sh
-}
+alias tnt-sync-notes="source ~/.dotfiles/tallieu/sync-notes.sh"
