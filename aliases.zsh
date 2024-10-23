@@ -30,11 +30,10 @@ dssh() {
 alias dcu="docker compose up"
 alias dps="docker ps"
 
-# Empty the Trash on all mounted volumes and the main HDD
-# Also, clear Apple’s System Logs to improve shell startup speed
-alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
-
 # Tallieu & Tallieu
+## Open a Tallieu & Tallieu project in PHPStorm
+alias tnt-open="source ~/.dotfiles/tallieu/open.sh"
+
 ## Clone a repository from Bitbucket or Github
 alias tnt-clone="source ~/.dotfiles/tallieu/clone.sh"
 
@@ -43,3 +42,7 @@ alias tnt-pull-notes="source ~/.dotfiles/tallieu/pull-notes.sh"
 
 ## Sync Obsidian notes
 alias tnt-sync-notes="source ~/.dotfiles/tallieu/sync-notes.sh"
+
+# Empty the Trash on all mounted volumes and the main HDD
+# Also, clear Apple’s System Logs to improve shell startup speed
+alias emptytrash="sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl"
