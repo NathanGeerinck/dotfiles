@@ -8,12 +8,12 @@ alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
 alias code='open -a "/Applications/Visual Studio Code.app" "`pwd`"'
 
 # PHP
-alias switch-php84="brew unlink php@8.4 && brew link --overwrite --force php"
-alias switch-php83="brew unlink php@8.3 && brew link --overwrite --force php"
-alias switch-php82="brew unlink php@8.2 && brew link --overwrite --force php"
-alias switch-php81="brew unlink php@8.1 && brew link --overwrite --force php"
-alias switch-php80="brew unlink php@8.0 && brew link --overwrite --force php"
-alias switch-php74="brew unlink php@7.4 && brew link --overwrite --force php"
+alias switch-php84="brew unlink php && brew link --overwrite --force php@8.4"
+alias switch-php83="brew unlink php && brew link --overwrite --force php@8.3"
+alias switch-php82="brew unlink php && brew link --overwrite --force php@8.2"
+alias switch-php81="brew unlink php && brew link --overwrite --force php@8.1"
+alias switch-php80="brew unlink php && brew link --overwrite --force php@8.0"
+alias switch-php74="brew unlink php && brew link --overwrite --force php@7.4"
 
 # Laravel
 alias pa='php artisan'
