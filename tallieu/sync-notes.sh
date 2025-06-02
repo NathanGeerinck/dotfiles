@@ -8,7 +8,11 @@ git pull
 
 git add .
 
-git commit -m "Add notes"
+if [ -n "$1" ]; then
+    git commit -m "$1"
+else
+    git commit -m "Add notes"
+fi
 
 git push
 
