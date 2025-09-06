@@ -1,7 +1,3 @@
-# NVM
-export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
-
 # Path to your dotfiles.
 export DOTFILES=$HOME/.dotfiles
 
@@ -119,3 +115,8 @@ export LANG=en_US.UTF-8
 export PHP_CS_FIXER_IGNORE_ENV=1
 
 export GPG_TTY=$(tty)
+
+# NVM
+export NVM_DIR=~/.nvm
+
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
