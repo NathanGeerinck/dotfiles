@@ -79,9 +79,10 @@ ZSH_CUSTOM=$DOTFILES
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(docker laravel git ssh-agent)
+plugins=(docker laravel git)
 
-zstyle :omz:plugins:ssh-agent agent-forwarding on
+# 1Password SSH Agent
+export SSH_AUTH_SOCK=~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock
 
 source $ZSH/oh-my-zsh.sh
 

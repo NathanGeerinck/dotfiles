@@ -32,16 +32,18 @@ alias dcu="docker compose up"
 alias dps="docker ps"
 
 # Tallieu & Tallieu
-## Open a Tallieu & Tallieu project in PHPStorm
+tnt-help() {
+  echo -e "$fg_bold[magenta]TNT (Tallieu & Tallieu) Commands:$reset_color"
+  echo -e "  tnt-open        Open a project in PHPStorm$reset_color"
+  echo -e "  tnt-clone       Clone a repository from Bitbucket or Github$reset_color"
+  echo -e "  tnt-pull-notes  Pull Obsidian notes$reset_color"
+  echo -e "  tnt-sync-notes  Sync Obsidian notes$reset_color"
+  echo -e "  tnt-help        Show this help message$reset_color"
+}
+
 alias tnt-open="source ~/.dotfiles/tallieu/open.sh"
-
-## Clone a repository from Bitbucket or Github
 alias tnt-clone="source ~/.dotfiles/tallieu/clone.sh"
-
-## Pull Obsidian notes
 alias tnt-pull-notes="source ~/.dotfiles/tallieu/pull-notes.sh"
-
-## Sync Obsidian notes
 alias tnt-sync-notes="source ~/.dotfiles/tallieu/sync-notes.sh"
 
 # Empty the Trash on all mounted volumes and the main HDD
