@@ -58,3 +58,7 @@ cask 'font-source-code-pro-for-powerline'
 cask 'font-source-code-pro'
 cask 'font-source-sans-pro'
 cask 'font-source-serif-pro'
+
+# Mac App Store
+mas 'Numbers', id: 409203825
+mas 'Pages', id: 361309726
