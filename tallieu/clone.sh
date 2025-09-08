@@ -1,5 +1,10 @@
 cd ~/Development/tnt
 
+if [ -z "$1" ]; then
+    echo -e "$fg_bold[red][✗] Error: repository is required$reset_color"
+    return
+fi
+
 if [[ $2 =~ ^(-gh|--github) ]]
 then
   echo -e "$fg_bold[magenta]Cloning $1 into ~/Development/tnt/$1$reset_color"

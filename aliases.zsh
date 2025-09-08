@@ -31,25 +31,33 @@ alias dps="docker ps"
 # Tallieu & Tallieu
 tnt-help() {
   echo -e "$fg_bold[magenta]TNT (Tallieu & Tallieu) Commands:$reset_color"
-  echo -e "  tnt-open        Open a project in PHPStorm$reset_color"
-  echo -e "  tnt-clone       Clone a repository from Bitbucket or Github$reset_color"
-  echo -e "  tnt-pull-notes  Pull Obsidian notes$reset_color"
-  echo -e "  tnt-sync-notes  Sync Obsidian notes$reset_color"
-  echo -e "  tnt-opencode    Run opencode with T&T credentials$reset_color"
-  echo -e "  tnt-help        Show this help message$reset_color"
-}
-
-tnt-opencode() {
-  source ~/.dotfiles/tallieu/opencode.sh "$@"
+  echo -e "  tnt-open <project>           Open a project in PHPStorm$reset_color"
+  echo -e "  tnt-clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
+  echo -e "  tnt-pull-notes               Pull Obsidian notes$reset_color"
+  echo -e "  tnt-sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
+  echo -e "  tnt-opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
+  echo -e "  tnt-help                     Show this help message$reset_color"
 }
 
 tnt-open() {
   source ~/.dotfiles/tallieu/open.sh "$@"
 }
 
-alias tnt-clone="source ~/.dotfiles/tallieu/clone.sh"
-alias tnt-pull-notes="source ~/.dotfiles/tallieu/pull-notes.sh"
-alias tnt-sync-notes="source ~/.dotfiles/tallieu/sync-notes.sh"
+tnt-clone() {
+  source ~/.dotfiles/tallieu/clone.sh "$@"
+}
+
+tnt-pull-notes() {
+  source ~/.dotfiles/tallieu/pull-notes.sh "$@"
+}
+
+tnt-sync-notes() {
+  source ~/.dotfiles/tallieu/sync-notes.sh "$@"
+}
+
+tnt-opencode() {
+  source ~/.dotfiles/tallieu/opencode.sh "$@"
+}
 
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed
