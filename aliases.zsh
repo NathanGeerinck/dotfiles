@@ -35,10 +35,18 @@ tnt-help() {
   echo -e "  tnt-clone       Clone a repository from Bitbucket or Github$reset_color"
   echo -e "  tnt-pull-notes  Pull Obsidian notes$reset_color"
   echo -e "  tnt-sync-notes  Sync Obsidian notes$reset_color"
+  echo -e "  tnt-opencode    Run opencode with T&T credentials$reset_color"
   echo -e "  tnt-help        Show this help message$reset_color"
 }
 
-alias tnt-open="source ~/.dotfiles/tallieu/open.sh"
+tnt-opencode() {
+  source ~/.dotfiles/tallieu/opencode.sh "$@"
+}
+
+tnt-open() {
+  source ~/.dotfiles/tallieu/open.sh "$@"
+}
+
 alias tnt-clone="source ~/.dotfiles/tallieu/clone.sh"
 alias tnt-pull-notes="source ~/.dotfiles/tallieu/pull-notes.sh"
 alias tnt-sync-notes="source ~/.dotfiles/tallieu/sync-notes.sh"

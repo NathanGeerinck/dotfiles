@@ -55,6 +55,7 @@ mkdir $HOME/Code
 
 # Symlink the Mackup config file to the home directory
 ln -s ./.mackup.cfg $HOME/.mackup.cfg
+
 # Set macOS preferences
 # We will run this last because this will reload the shell
 source .macos
