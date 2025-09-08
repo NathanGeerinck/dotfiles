@@ -36,3 +36,29 @@ tnt() {
       ;;
   esac
 }
+
+# Autocompletion for tnt command
+_tnt_completion() {
+  local -a commands
+  commands=(
+    'help:Show help message'
+    'open:Open a project in PHPStorm'
+    'clone:Clone a repository from Bitbucket or Github'
+    'pull-notes:Pull Obsidian notes'
+    'sync-notes:Sync Obsidian notes'
+    'opencode:Run opencode with T&T credentials'
+  )
+
+  if (( CURRENT == 2 )); then
+    _describe 'tnt commands' commands
+  elif (( CURRENT == 3 )) && [[ ${words[2]} == "open" ]]; then
+    # For 'tnt open', complete with directory names in ~/Development/tnt
+    if [[ -d ~/Development/tnt ]]; then
+      local -a projects
+      projects=($(ls ~/Development/tnt 2>/dev/null))
+      _describe 'projects' projects
+    fi
+  fi
+}
+
+compdef _tnt_completion tnt
