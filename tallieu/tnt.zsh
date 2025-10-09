@@ -2,12 +2,12 @@ tnt() {
   case "$1" in
     help)
       echo -e "$fg_bold[magenta]TNT (Tallieu & Tallieu) Commands:$reset_color"
-      echo -e "  tnt open <project>           Open a project in PHPStorm$reset_color"
-      echo -e "  tnt clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
-      echo -e "  tnt pull-notes               Pull Obsidian notes$reset_color"
-      echo -e "  tnt sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
-      echo -e "  tnt opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
-      echo -e "  tnt help                     Show this help message$reset_color"
+      echo -e "  open <project>           Open a project in PHPStorm$reset_color"
+      echo -e "  clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
+      echo -e "  pull-notes               Pull Obsidian notes$reset_color"
+      echo -e "  sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
+      echo -e "  opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
+      echo -e "  help                     Show this help message$reset_color"
       ;;
     open)
       shift
