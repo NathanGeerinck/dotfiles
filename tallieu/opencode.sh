@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Load environment variables from .env file
-if [ -f ~/.dotfiles/.env ]; then
-    source ~/.dotfiles/.env
-fi
-
 # Check if ANTHROPIC_KEY_TNT is set
 if [ -z "$ANTHROPIC_KEY_TNT" ]; then
     echo -e "$fg_bold[red][✗] Error: ANTHROPIC_KEY_TNT not found in .env file$reset_color"
