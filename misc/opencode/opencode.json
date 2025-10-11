@@ -1,0 +1,41 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "catppuccin",
+  "autoshare": false,
+  "autoupdate": true,
+  "model": "anthropic/claude-sonnet-4-5-20250929",
+  "permission": {
+    "edit": "ask",
+    "bash": {
+      "git status": "allow",
+      "git diff*": "allow",
+      "git log *": "allow",
+      "git add *": "allow",
+      "git show *": "allow",
+      "git tag --list *": "allow",
+      "git ls-files *": "allow",
+      "grep *": "allow",
+      "tail *": "allow",
+      "ls *": "allow",
+      "pwd": "allow",
+      "head *": "allow",
+      "cd *": "allow",
+      "*": "ask"
+    }
+  },
+  "mcp": {
+    "browser": {
+      "type": "local",
+      "enabled": false,
+      "command": ["npx", "@browsermcp/mcp@latest"]
+    },
+    "shortcut": {
+      "type": "local",
+      "enabled": true,
+      "command": ["npx", "-y", "@shortcut/mcp@latest"],
+      "environment": {
+        "SHORTCUT_API_TOKEN": "{env:SHORTCUT_KEY_TNT}"
+      }
+    }
+  }
+}
