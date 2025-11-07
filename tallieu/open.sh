@@ -3,5 +3,5 @@ if [ -z "$1" ]; then
     return
 fi
 
-echo -e "$fg_bold[magenta]Opening $1 in PhpStorm$reset_color"
+echo -e "$fg_bold[cyan]Opening $1 in PhpStorm$reset_color"
 open -a /Applications/PhpStorm.app ~/Development/tnt/$1

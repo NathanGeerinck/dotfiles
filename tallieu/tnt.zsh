@@ -1,12 +1,14 @@
 tnt() {
   case "$1" in
     help)
-      echo -e "$fg_bold[magenta]TNT (Tallieu & Tallieu) Commands:$reset_color"
+      echo -e "$fg_bold[cyan]TNT (Tallieu & Tallieu) Commands:$reset_color"
       echo -e "  open <project>           Open a project in PHPStorm$reset_color"
       echo -e "  clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
       echo -e "  pull-notes               Pull Obsidian notes$reset_color"
       echo -e "  sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
       echo -e "  opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
+      echo -e "  startup                  Stop Valet, quit PHP Monitor, and start Docker Desktop$reset_color"
+      echo -e "  shutdown                 Quit Docker Desktop$reset_color"
       echo -e "  help                     Show this help message$reset_color"
       ;;
     open)
@@ -29,6 +31,14 @@ tnt() {
       shift
       source ~/.dotfiles/tallieu/opencode.sh "$@"
       ;;
+    startup)
+      shift
+      source ~/.dotfiles/tallieu/startup.sh "$@"
+      ;;
+    shutdown)
+      shift
+      source ~/.dotfiles/tallieu/shutdown.sh "$@"
+      ;;
     *)
       echo -e "$fg_bold[red][✗] Error: Unknown command '$1'$reset_color"
       echo -e "Usage: tnt <command> [args]"
@@ -47,6 +57,8 @@ _tnt_completion() {
     'pull-notes:Pull Obsidian notes'
     'sync-notes:Sync Obsidian notes'
     'opencode:Run opencode with T&T credentials'
+    'startup:Stop Valet, quit PHP Monitor, and start Docker Desktop'
+    'shutdown:Quit Docker Desktop'
   )
 
   if (( CURRENT == 2 )); then

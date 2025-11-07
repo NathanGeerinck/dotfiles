@@ -28,6 +28,9 @@ dssh() {
 alias dcu="docker compose up"
 alias dps="docker ps"
 
+# Intilli
+source ~/.dotfiles/intilli/intilli.zsh
+
 # Tallieu & Tallieu
 source ~/.dotfiles/tallieu/tnt.zsh
 

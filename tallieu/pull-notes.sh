@@ -1,4 +1,4 @@
-echo -e "$fg_bold[magenta]Pulling notes...$reset_color"
+echo -e "$fg_bold[cyan]Pulling notes...$reset_color"
 
 PREV_DIR=$(pwd)
 
