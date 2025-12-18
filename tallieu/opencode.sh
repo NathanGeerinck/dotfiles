@@ -6,6 +6,4 @@ if [ -z "$ANTHROPIC_KEY_TNT" ]; then
     exit 1
 fi
 
-# Set the Anthropic API key and run opencode
-export ANTHROPIC_API_KEY="$ANTHROPIC_KEY_TNT"
-opencode "$@"
+ANTHROPIC_API_KEY="$ANTHROPIC_KEY_TNT" opencode "$@"
