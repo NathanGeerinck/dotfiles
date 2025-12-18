@@ -7,7 +7,7 @@ Contains custom aliases, functions, and environment setup. Application settings 
 You can install them by cloning the repository as `.dotfiles` in your home directory and running the installation script:
 
 ```bash
-git clone https://github.com/yourusername/dotfiles.git ~/.dotfiles
+git clone https://github.com/NathanGeerinck/dotfiles.git ~/.dotfiles
 cd ~/.dotfiles
 ./install.sh
 ```
