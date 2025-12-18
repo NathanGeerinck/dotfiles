@@ -17,6 +17,6 @@ then
   cd "$2"
 else
   echo -e "$fg_bold[cyan]Cloning $1 into ~/Development/tnt/$1$reset_color"
-  git clone https://nathangeerincktnt@bitbucket.org/tallieu/$1.git
+  git clone git@bitbucket.org:tallieu/$1.git
   cd "$1"
 fi
