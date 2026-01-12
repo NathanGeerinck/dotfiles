@@ -124,3 +124,4 @@ export GPG_TTY=$(tty)
 export NVM_DIR=~/.nvm
 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+. "/Users/nathan/.acme.sh/acme.sh.env"

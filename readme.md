@@ -35,8 +35,9 @@ cd ~/.dotfiles
 
 ### Intilli Commands
 ```bash
-intilli startup     # Stop Docker, start Valet and PHP Monitor
+intilli startup     # Start Valet and PHP Monitor
 intilli shutdown    # Stop Valet and quit PHP Monitor
+intilli share       # Run valet share
 intilli help        # Show help message
 ```
 
@@ -47,7 +48,8 @@ tnt clone <repo> [-gh]       # Clone repo from Bitbucket (or GitHub with -gh)
 tnt pull-notes               # Pull Obsidian notes
 tnt sync-notes [message]     # Sync Obsidian notes
 tnt opencode [args]          # Run OpenCode with T&T credentials
-tnt startup                  # Stop Valet, quit PHP Monitor, start Docker
+tnt share [args]             # Run ngrok with T&T credentials (e.g., tnt share http 80)
+tnt startup                  # Start Docker
 tnt shutdown                 # Quit Docker Desktop
 tnt help                     # Show help message
 ```
