@@ -7,4 +7,4 @@ if [ -z "$NGROK_AUTHTOKEN_TNT" ]; then
 fi
 
 echo -e "$fg_bold[cyan]Starting ngrok with T&T credentials...$reset_color"
-NGROK_AUTHTOKEN="$NGROK_AUTHTOKEN_TNT" ngrok "$@"
+ngrok "$@" --authtoken="$NGROK_AUTHTOKEN_TNT"

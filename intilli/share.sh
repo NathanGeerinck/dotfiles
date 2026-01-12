@@ -7,4 +7,4 @@ if [ -z "$NGROK_AUTHTOKEN_INTILLI" ]; then
 fi
 
 echo -e "$fg_bold[cyan]Starting valet share with Intilli ngrok credentials...$reset_color"
-NGROK_AUTHTOKEN="$NGROK_AUTHTOKEN_INTILLI" valet share "$@"
+valet share --authtoken="$NGROK_AUTHTOKEN_INTILLI" "$@"
