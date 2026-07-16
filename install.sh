@@ -53,6 +53,14 @@ $HOME/.composer/vendor/bin/valet install
 # Create projects directories
 mkdir $HOME/Code
 
+# Install Claude Code and symlink its config
+printf "Install Claude Code? (y/n) "
+read -r reply
+case "$reply" in
+  [Yy]*) bash $HOME/.dotfiles/misc/claude/install.sh ;;
+  *) echo "Skipping Claude Code installation." ;;
+esac
+
 # Symlink the Mackup config file to the home directory
 ln -s ./.mackup.cfg $HOME/.mackup.cfg
 
