@@ -1,0 +1,36 @@
+#!/bin/bash
+#
+# Installs Claude Code and symlinks the config in this repo into ~/.claude.
+# Safe to run repeatedly. Can be run standalone or from bin/install.
+
+set -e
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export DOTFILES
+source "$DOTFILES/bin/lib.sh"
+
+CLAUDE_SRC="$DOTFILES/config/claude"
+CLAUDE_DIR="$HOME/.claude"
+
+echo "Setting up Claude Code..."
+
+[ -d "$CLAUDE_SRC" ] || abort "$CLAUDE_SRC not found, aborting"
+
+# Install the CLI if it isn't there yet
+if command -v claude >/dev/null 2>&1; then
+  ok "Claude Code already installed"
+elif command -v brew >/dev/null 2>&1; then
+  brew install --cask claude-code
+else
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
+
+mkdir -p "$CLAUDE_DIR"
+
+link "$CLAUDE_SRC/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+link "$CLAUDE_SRC/laravel-php-guidelines.md" "$CLAUDE_DIR/laravel-php-guidelines.md"
+link "$CLAUDE_SRC/settings.json" "$CLAUDE_DIR/settings.json"
+link "$CLAUDE_SRC/skills" "$CLAUDE_DIR/skills"
+link "$CLAUDE_SRC/agents" "$CLAUDE_DIR/agents"
+
+echo "Claude Code setup complete. Restart Claude Code to pick up the changes."

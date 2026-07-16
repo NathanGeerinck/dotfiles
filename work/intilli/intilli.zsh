@@ -9,15 +9,15 @@ intilli() {
       ;;
     startup)
       shift
-      source ~/.dotfiles/intilli/startup.sh "$@"
+      source "$DOTFILES/work/intilli/startup.sh" "$@"
       ;;
     shutdown)
       shift
-      source ~/.dotfiles/intilli/shutdown.sh "$@"
+      source "$DOTFILES/work/intilli/shutdown.sh" "$@"
       ;;
     share)
       shift
-      source ~/.dotfiles/intilli/share.sh "$@"
+      source "$DOTFILES/work/intilli/share.sh" "$@"
       ;;
     *)
       echo -e "$fg_bold[red][✗] Error: Unknown command '$1'$reset_color"

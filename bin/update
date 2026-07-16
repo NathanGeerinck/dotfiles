@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+# Pulls the latest dotfiles and updates everything they installed.
+
+set -e
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export DOTFILES
+source "$DOTFILES/bin/lib.sh"
+
+step "Dotfiles"
+git -C "$DOTFILES" pull --ff-only
+ok "up to date"
+
+step "Homebrew"
+brew update
+brew upgrade
+brew bundle --file="$DOTFILES/config/Brewfile"
+brew cleanup
+ok "packages updated"
+
+step "Composer"
+composer global update
+ok "global packages updated"
+
+step "Done"
+info "Restart your terminal, or run: exec zsh"

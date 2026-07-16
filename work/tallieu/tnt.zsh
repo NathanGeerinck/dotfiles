@@ -14,35 +14,35 @@ tnt() {
       ;;
     open)
       shift
-      source ~/.dotfiles/tallieu/open.sh "$@"
+      source "$DOTFILES/work/tallieu/open.sh" "$@"
       ;;
     clone)
       shift
-      source ~/.dotfiles/tallieu/clone.sh "$@"
+      source "$DOTFILES/work/tallieu/clone.sh" "$@"
       ;;
     pull-notes)
       shift
-      source ~/.dotfiles/tallieu/pull-notes.sh "$@"
+      source "$DOTFILES/work/tallieu/pull-notes.sh" "$@"
       ;;
     sync-notes)
       shift
-      source ~/.dotfiles/tallieu/sync-notes.sh "$@"
+      source "$DOTFILES/work/tallieu/sync-notes.sh" "$@"
       ;;
     opencode)
       shift
-      source ~/.dotfiles/tallieu/opencode.sh "$@"
+      source "$DOTFILES/work/tallieu/opencode.sh" "$@"
       ;;
     share)
       shift
-      source ~/.dotfiles/tallieu/share.sh "$@"
+      source "$DOTFILES/work/tallieu/share.sh" "$@"
       ;;
     startup)
       shift
-      source ~/.dotfiles/tallieu/startup.sh "$@"
+      source "$DOTFILES/work/tallieu/startup.sh" "$@"
       ;;
     shutdown)
       shift
-      source ~/.dotfiles/tallieu/shutdown.sh "$@"
+      source "$DOTFILES/work/tallieu/shutdown.sh" "$@"
       ;;
     *)
       echo -e "$fg_bold[red][✗] Error: Unknown command '$1'$reset_color"
