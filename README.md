@@ -1,6 +1,6 @@
 # Nathan's Dotfiles
 
-My personal dotfiles for macOS, built around Laravel/PHP work at [Intilli](https://intilli.be) and [Tallieu & Tallieu](https://tallieu.be).
+My personal dotfiles for macOS, built around Laravel/PHP work at [Intilli](https://intilli.be) and [Tallieu & Tallieu](https://www.tnt.be).
 
 Shell config, Homebrew packages, per client commands, and a version controlled Claude Code setup (skills, agents, and settings). Application preferences are handled separately by [Mackup](https://github.com/lra/mackup).
 
