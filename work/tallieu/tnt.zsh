@@ -6,7 +6,6 @@ tnt() {
       echo -e "  clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
       echo -e "  pull-notes               Pull Obsidian notes$reset_color"
       echo -e "  sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
-      echo -e "  opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
       echo -e "  share [args]             Run ngrok with T&T credentials$reset_color"
       echo -e "  startup                  Stop Valet, quit PHP Monitor, and start Docker Desktop$reset_color"
       echo -e "  shutdown                 Quit Docker Desktop$reset_color"
@@ -14,35 +13,31 @@ tnt() {
       ;;
     open)
       shift
-      source ~/.dotfiles/tallieu/open.sh "$@"
+      source "$DOTFILES/work/tallieu/open.sh" "$@"
       ;;
     clone)
       shift
-      source ~/.dotfiles/tallieu/clone.sh "$@"
+      source "$DOTFILES/work/tallieu/clone.sh" "$@"
       ;;
     pull-notes)
       shift
-      source ~/.dotfiles/tallieu/pull-notes.sh "$@"
+      source "$DOTFILES/work/tallieu/pull-notes.sh" "$@"
       ;;
     sync-notes)
       shift
-      source ~/.dotfiles/tallieu/sync-notes.sh "$@"
-      ;;
-    opencode)
-      shift
-      source ~/.dotfiles/tallieu/opencode.sh "$@"
+      source "$DOTFILES/work/tallieu/sync-notes.sh" "$@"
       ;;
     share)
       shift
-      source ~/.dotfiles/tallieu/share.sh "$@"
+      source "$DOTFILES/work/tallieu/share.sh" "$@"
       ;;
     startup)
       shift
-      source ~/.dotfiles/tallieu/startup.sh "$@"
+      source "$DOTFILES/work/tallieu/startup.sh" "$@"
       ;;
     shutdown)
       shift
-      source ~/.dotfiles/tallieu/shutdown.sh "$@"
+      source "$DOTFILES/work/tallieu/shutdown.sh" "$@"
       ;;
     *)
       echo -e "$fg_bold[red][✗] Error: Unknown command '$1'$reset_color"
@@ -61,7 +56,6 @@ _tnt_completion() {
     'clone:Clone a repository from Bitbucket or Github'
     'pull-notes:Pull Obsidian notes'
     'sync-notes:Sync Obsidian notes'
-    'opencode:Run opencode with T&T credentials'
     'share:Run ngrok with T&T credentials'
     'startup:Stop Valet, quit PHP Monitor, and start Docker Desktop'
     'shutdown:Quit Docker Desktop'

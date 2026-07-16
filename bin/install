@@ -1,0 +1,98 @@
+#!/bin/bash
+#
+# Sets up a Mac from scratch. Safe to run repeatedly.
+
+set -e
+
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export DOTFILES
+source "$DOTFILES/bin/lib.sh"
+
+echo "Setting up your Mac from $DOTFILES"
+
+# Ask for the password once, up front, rather than halfway through.
+sudo -v
+
+step "Xcode Command Line Tools"
+if xcode-select -p >/dev/null 2>&1; then
+  ok "already installed"
+else
+  info "installing, rerun this script once the installer finishes"
+  xcode-select --install
+  exit 0
+fi
+
+step "Oh My Zsh"
+if [ -d "$HOME/.oh-my-zsh" ]; then
+  ok "already installed"
+else
+  # --unattended matters: without it the installer starts a new shell and
+  # everything below this line never runs.
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/HEAD/tools/install.sh)" "" --unattended ||
+    warn "Oh My Zsh install failed"
+  ok "installed"
+fi
+
+step "Homebrew"
+if command -v brew >/dev/null 2>&1; then
+  ok "already installed"
+else
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >>"$HOME/.zprofile"
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+  ok "installed"
+fi
+
+step "Symlinks"
+link "$DOTFILES/home/.zshrc" "$HOME/.zshrc"
+# Mackup takes ownership of this file once it syncs, replacing it with a link
+# into iCloud. Only place ours if there is nothing there yet.
+if [ -e "$HOME/.mackup.cfg" ]; then
+  ok ".mackup.cfg already present, leaving it alone"
+else
+  link "$DOTFILES/macos/.mackup.cfg" "$HOME/.mackup.cfg"
+fi
+
+step "Homebrew packages"
+brew update
+# Not fatal: one unavailable cask should not abandon the rest of the setup.
+brew bundle --file="$DOTFILES/config/Brewfile" || warn "some packages failed, check the output above"
+ok "Brewfile processed"
+
+step "Default shell"
+if [ "$SHELL" = "$(command -v zsh)" ]; then
+  ok "already zsh"
+else
+  chsh -s "$(command -v zsh)" || warn "chsh failed"
+  ok "set to zsh"
+fi
+
+step "PHP extensions"
+pecl install imagick >/dev/null 2>&1 && ok "imagick installed" || warn "imagick already installed or failed"
+
+step "Composer packages"
+composer global require laravel/valet || warn "valet install failed"
+"$HOME/.composer/vendor/bin/valet" install || warn "valet setup failed"
+ok "valet processed"
+
+step "Projects directory"
+mkdir -p "$HOME/Development"
+ok "$HOME/Development ready"
+
+step "Claude Code"
+if confirm "Install Claude Code and link its config?"; then
+  bash "$DOTFILES/bin/install-claude"
+else
+  warn "skipped"
+fi
+
+step "macOS defaults"
+if confirm "Apply macOS system preferences? This restarts several apps."; then
+  bash "$DOTFILES/macos/set-defaults.sh"
+else
+  warn "skipped, run macos/set-defaults.sh later if you want them"
+fi
+
+step "Done"
+info "Restart your terminal, or run: exec zsh"
+info "Restore app settings with: mackup restore"

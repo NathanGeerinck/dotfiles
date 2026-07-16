@@ -29,10 +29,10 @@ alias dcu="docker compose up"
 alias dps="docker ps"
 
 # Intilli
-source ~/.dotfiles/intilli/intilli.zsh
+source "$DOTFILES/work/intilli/intilli.zsh"
 
 # Tallieu & Tallieu
-source ~/.dotfiles/tallieu/tnt.zsh
+source "$DOTFILES/work/tallieu/tnt.zsh"
 
 # Empty the Trash on all mounted volumes and the main HDD
 # Also, clear Apple’s System Logs to improve shell startup speed
