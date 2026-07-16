@@ -6,7 +6,6 @@ tnt() {
       echo -e "  clone <repo> [-gh]       Clone a repository from Bitbucket (default) or Github with -gh flag$reset_color"
       echo -e "  pull-notes               Pull Obsidian notes$reset_color"
       echo -e "  sync-notes [message]     Sync Obsidian notes with optional commit message$reset_color"
-      echo -e "  opencode [args]          Run opencode with T&T credentials, passes all args to opencode$reset_color"
       echo -e "  share [args]             Run ngrok with T&T credentials$reset_color"
       echo -e "  startup                  Stop Valet, quit PHP Monitor, and start Docker Desktop$reset_color"
       echo -e "  shutdown                 Quit Docker Desktop$reset_color"
@@ -27,10 +26,6 @@ tnt() {
     sync-notes)
       shift
       source "$DOTFILES/work/tallieu/sync-notes.sh" "$@"
-      ;;
-    opencode)
-      shift
-      source "$DOTFILES/work/tallieu/opencode.sh" "$@"
       ;;
     share)
       shift
@@ -61,7 +56,6 @@ _tnt_completion() {
     'clone:Clone a repository from Bitbucket or Github'
     'pull-notes:Pull Obsidian notes'
     'sync-notes:Sync Obsidian notes'
-    'opencode:Run opencode with T&T credentials'
     'share:Run ngrok with T&T credentials'
     'startup:Stop Valet, quit PHP Monitor, and start Docker Desktop'
     'shutdown:Quit Docker Desktop'
