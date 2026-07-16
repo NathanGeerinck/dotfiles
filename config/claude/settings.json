@@ -2,6 +2,11 @@
   "effortLevel": "xhigh",
   "tui": "fullscreen",
   "alwaysThinkingEnabled": true,
+  "attribution": {
+    "commit": "",
+    "pr": "",
+    "sessionUrl": false
+  },
   "permissions": {
     "defaultMode": "acceptEdits",
     "allow": [
