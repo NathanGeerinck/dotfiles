@@ -38,22 +38,25 @@ Secrets are handled for you, as long as the 1Password app is installed and unloc
 | Symlink | Points to |
 |---|---|
 | `~/.zshrc` | `home/.zshrc` |
+| `~/.gitconfig` | `home/.gitconfig` |
+| `~/.global-gitignore` | `home/.global-gitignore` |
 | `~/.mackup.cfg` | `macos/.mackup.cfg` (only if absent, see below) |
 | `~/.claude/CLAUDE.md` | `config/claude/CLAUDE.md` |
 | `~/.claude/laravel-php-guidelines.md` | `config/claude/laravel-php-guidelines.md` |
 | `~/.claude/settings.json` | `config/claude/settings.json` |
+| `~/.claude/statusline.sh` | `config/claude/statusline.sh` |
 | `~/.claude/skills` | `config/claude/skills/` |
 | `~/.claude/agents` | `config/claude/agents/` |
 
 ## What this repo owns, and what Mackup owns
 
-These two overlap in a way that is worth spelling out, because it is easy to go looking for a file in the wrong place.
+This repo owns the shell (`.zshrc` and everything it sources), git (`.gitconfig` and `.global-gitignore`), and the Claude Code config. Mackup is told to ignore `zsh` and `git`, so it stays out of the way of all of it.
 
-This repo owns the shell (`.zshrc` and everything it sources) and the Claude Code config. Mackup is configured to ignore `zsh`, so it stays out of the way.
+Mackup owns application preferences only, synced through iCloud.
 
-Mackup owns application preferences and, per `macos/.mackup.cfg`, **your `.gitconfig`**. It syncs them through iCloud. There is no `.gitconfig` in this repo, and that is deliberate.
+`.mackup.cfg` is the awkward case. Mackup syncs its own config file, so once you run `mackup backup`, `~/.mackup.cfg` becomes a symlink into iCloud and this repo's copy is no longer what you are reading. The copy here exists only to bootstrap a fresh Mac, where Mackup needs to know the storage engine before it can restore anything. That is why `bin/install` places it only when nothing is there yet. **If you change `macos/.mackup.cfg`, mirror it into `~/.mackup.cfg`,** or the change only reaches a machine that has never run Mackup.
 
-`.mackup.cfg` is the awkward case. Mackup syncs its own config file, so once you run `mackup backup`, `~/.mackup.cfg` becomes a symlink into iCloud and this repo's copy is no longer what you are reading. The copy here exists only to bootstrap a fresh Mac, where Mackup needs to know the storage engine before it can restore anything. That is why `bin/install` places it only when nothing is there yet.
+Git used to be Mackup's. There is a stale `.gitconfig` sitting in the iCloud Mackup folder from before the switch to SSH commit signing, which is why `git` is now in `applications_to_ignore`: without that, `mackup restore` would overwrite the real config with the old one.
 
 ## How the shell loads
 
