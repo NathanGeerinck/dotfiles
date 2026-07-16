@@ -79,6 +79,20 @@ step "Projects directory"
 mkdir -p "$HOME/Development"
 ok "$HOME/Development ready"
 
+step "Secrets"
+# .env is generated from .env.tpl, which holds 1Password secret references
+# rather than the secrets themselves. Needs the 1Password app unlocked with the
+# CLI integration enabled.
+if ! command -v op >/dev/null 2>&1; then
+  warn "1Password CLI not found, skipping .env"
+  info "run 'op inject -f -i .env.tpl -o .env' once it is installed"
+elif ! op account list >/dev/null 2>&1; then
+  warn "1Password CLI not signed in, skipping .env"
+  info "sign in, then run 'op inject -f -i .env.tpl -o .env'"
+else
+  op inject -f -i "$DOTFILES/.env.tpl" -o "$DOTFILES/.env" && ok ".env generated from 1Password"
+fi
+
 step "Claude Code"
 if confirm "Install Claude Code and link its config?"; then
   bash "$DOTFILES/bin/install-claude"

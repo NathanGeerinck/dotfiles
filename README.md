@@ -16,10 +16,9 @@ bin/install
 
 The script asks for your password once at the start, then installs the Xcode Command Line Tools, Oh My Zsh, Homebrew, everything in the Brewfile, and Laravel Valet. It prompts before installing Claude Code and before applying the macOS system preferences. It is idempotent, so rerunning it is safe.
 
-Two things it does not do, because they are personal rather than mechanical:
+It does leave one thing to you: run `mackup restore` to pull your application preferences back from iCloud.
 
-1. Copy `.env.example` to `.env` and fill in your tokens. Nothing that needs them will work until you do.
-2. Run `mackup restore` to pull your application preferences back from iCloud.
+Secrets are handled for you, as long as the 1Password app is installed and unlocked with the CLI integration turned on. See below.
 
 ## Structure
 
@@ -69,13 +68,23 @@ Order matters in two places. Anything using `compdef` (the `tnt` and `intilli` c
 
 ## Secrets
 
-`.env` is gitignored. `.env.example` lists the keys that are expected:
+Secrets live in 1Password, never in this repo and never in iCloud. `.env` is generated from `.env.tpl`, which is committed and holds [1Password secret references](https://developer.1password.com/docs/cli/secret-references/) instead of values:
 
-```bash
-cp .env.example .env
+```
+NGROK_AUTHTOKEN_INTILLI="{{ op://Intilli/Ngrok/authtoken }}"
 ```
 
-`home/env.zsh` sources the file with `set -a`, so every key in it is exported automatically. Adding a key to `.env` is all that is needed, there is no matching export to maintain.
+`bin/install` generates `.env` on a new machine. Regenerate it yourself after rotating a token:
+
+```bash
+op inject -f -i .env.tpl -o .env
+```
+
+This needs the 1Password app unlocked with the CLI integration enabled (Settings, Developer, Integrate with 1Password CLI). `bin/install` skips this step with a warning when `op` is missing or signed out, so the rest of the install still completes.
+
+`.env` itself is gitignored and stays an ordinary file, so `home/env.zsh` sources it with `set -a` and every key is exported automatically. There is no per shell call to `op` and no startup cost. To add a secret, put it in 1Password, add a line to `.env.tpl`, and regenerate.
+
+One quirk worth knowing: the Tallieu & Tallieu vault is referenced by ID rather than name, because `op` rejects the `&` in "Tallieu & Tallieu" as an illegal character in a secret reference.
 
 ## Claude Code
 
