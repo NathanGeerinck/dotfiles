@@ -23,6 +23,19 @@ export GPG_TTY=$(tty)
 
 source "$DOTFILES/home/path.zsh"
 source "$DOTFILES/home/aliases.zsh"
+source "$DOTFILES/home/functions.zsh"
+source "$DOTFILES/home/db.zsh"
+
+# Modern CLI tools, each guarded so a machine without them still gets a shell.
+# zoxide tracks the directories you visit: `z tnt` jumps to the best match, `zi`
+# picks interactively.
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# fzf: ctrl+r fuzzy history, ctrl+t file search, alt+c cd
+command -v fzf >/dev/null 2>&1 && source <(fzf --zsh)
+
+[ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] &&
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # NVM
 export NVM_DIR=~/.nvm

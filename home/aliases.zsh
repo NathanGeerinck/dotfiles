@@ -5,6 +5,9 @@ alias reload=". ~/.zshrc && echo 'ZSH config reloaded from ~/.zshrc'"
 alias phpstorm='open -a /Applications/PhpStorm.app "`pwd`"'
 
 # PHP
+# 8.5 is the plain 'php' formula, so switching to it just relinks php itself.
+# Versions you have not installed will fail with a brew error; see config/Brewfile.
+alias switch-php85="brew unlink php && brew link --overwrite --force php"
 alias switch-php84="brew unlink php && brew link --overwrite --force php@8.4"
 alias switch-php83="brew unlink php && brew link --overwrite --force php@8.3"
 alias switch-php82="brew unlink php && brew link --overwrite --force php@8.2"
@@ -19,6 +22,8 @@ alias pa='php artisan'
 alias pull="git pull"
 alias push="git push"
 alias commit="git add . && git commit -m 'wip'"
+alias uncommit="git reset --soft HEAD~1"
+alias nah="git reset --hard && git clean -df"
 
 # Docker
 dssh() {

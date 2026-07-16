@@ -45,6 +45,8 @@ fi
 
 step "Symlinks"
 link "$DOTFILES/home/.zshrc" "$HOME/.zshrc"
+link "$DOTFILES/home/.gitconfig" "$HOME/.gitconfig"
+link "$DOTFILES/home/.global-gitignore" "$HOME/.global-gitignore"
 # Mackup takes ownership of this file once it syncs, replacing it with a link
 # into iCloud. Only place ours if there is nothing there yet.
 if [ -e "$HOME/.mackup.cfg" ]; then
@@ -55,6 +57,9 @@ fi
 
 step "Homebrew packages"
 brew update
+# The Brewfile taps shivammathur/php for the PHP versions homebrew/core dropped.
+# Brew refuses to install from an untrusted tap, so trust it before bundling.
+brew trust shivammathur/php >/dev/null 2>&1 || warn "could not trust shivammathur/php"
 # Not fatal: one unavailable cask should not abandon the rest of the setup.
 brew bundle --file="$DOTFILES/config/Brewfile" || warn "some packages failed, check the output above"
 ok "Brewfile processed"

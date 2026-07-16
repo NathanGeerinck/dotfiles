@@ -1,21 +1,47 @@
 # Install everything in this file with: brew bundle --file=~/.dotfiles/config/Brewfile
 #
-# No taps are needed. Casks and fonts both live in homebrew/cask now, and
-# homebrew/bundle ships with Homebrew itself.
+# Casks and fonts both live in homebrew/cask now, and homebrew/bundle ships with
+# Homebrew itself, so neither needs a tap.
+
+# homebrew/core only carries php@8.3 and php@8.4. The older versions the
+# switch-php aliases rely on come from here. Brew will ask you to trust the tap
+# the first time; bin/install does that for you.
+tap 'shivammathur/php'
 
 # Binaries
 brew 'awscli'
 brew 'bash'
 brew 'ffmpeg'
 brew 'git'
+brew 'gh'
 brew 'grep'
+brew 'jq'
 brew 'mackup'
 brew 'mas'
 brew 'zsh'
 brew 'zsh-completions'
 
+# Modern CLI tools
+brew 'zoxide'      # z <dir> jumps to a directory by frecency
+brew 'fzf'         # ctrl+r fuzzy history, ctrl+t file search
+brew 'ripgrep'     # rg, faster grep that respects .gitignore
+brew 'fd'          # simpler, faster find
+brew 'bat'         # cat with syntax highlighting
+brew 'eza'         # modern ls
+brew 'git-delta'   # side-by-side syntax highlighted git diffs
+brew 'zsh-autosuggestions'
+
 # Development
+# 'php' is the current release, which is 8.5. php@8.5 is only an alias for it,
+# so there is nothing extra to install for 8.5.
+# The pinned versions below back the switch-php aliases. homebrew/core stops at
+# 8.3, so anything older comes from the shivammathur tap. Each one is a sizeable
+# install, so only add a version you actually switch to.
 brew 'php'
+brew 'php@8.4'
+brew 'shivammathur/php/php@8.2'
+brew 'shivammathur/php/php@8.1'
+brew 'shivammathur/php/php@7.4'
 brew 'composer'
 brew 'imagemagick'
 brew 'mysql'
@@ -56,8 +82,8 @@ cask 'font-open-sans'
 cask 'font-roboto'
 cask 'font-source-code-pro-for-powerline'
 cask 'font-source-code-pro'
-cask 'font-source-sans-pro'
-cask 'font-source-serif-pro'
+cask 'font-source-sans-3'
+cask 'font-source-serif-4'
 cask 'font-fira-code'
 cask 'font-fira-code-nerd-font'
 cask 'font-jetbrains-mono'

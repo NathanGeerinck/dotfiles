@@ -30,6 +30,7 @@ mkdir -p "$CLAUDE_DIR"
 link "$CLAUDE_SRC/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 link "$CLAUDE_SRC/laravel-php-guidelines.md" "$CLAUDE_DIR/laravel-php-guidelines.md"
 link "$CLAUDE_SRC/settings.json" "$CLAUDE_DIR/settings.json"
+link "$CLAUDE_SRC/statusline.sh" "$CLAUDE_DIR/statusline.sh"
 link "$CLAUDE_SRC/skills" "$CLAUDE_DIR/skills"
 link "$CLAUDE_SRC/agents" "$CLAUDE_DIR/agents"
 
