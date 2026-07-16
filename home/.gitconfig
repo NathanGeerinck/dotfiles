@@ -1,0 +1,47 @@
+[user]
+	name = Nathan Geerinck
+	email = nathan@intilli.be
+	signingkey = ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC3DbO9eATYvRD4hU4fv+xh4PsXrWDRB+WGV0psJgzhVyU4YSbQ48V8AGrKTEuR+h+Bua1yeo/PSg83YGQferwjhDkQQKqfgntwEvbPe8kv6p5M+WJBVzFr1TjMKf8FHgqubDWozM9i5hrjw2Uf1RyFxHIk2+6lxDzE1NVSr5zExTVr+hSe25P2z7BRwWZ8bxpMe0iPMh4y+CZu/8j3Z4yfbB4D4/N7vfR2iSe3p3vj9vPMSQRRwa90Vt3XQEQ9pWgGMBds4WzxpGnFHIDW345BbkRCu3z4Bwu9hgU5mp8l9WKEPJAmw1xIZoFFGl5ewH2molyUNBLGUgLHwGKG7B9PR/DMnQUCGT+zdkNJLidlFIXDhIami6gfRKIWnvtR1LHh6ziNafktoBol8sorvy0AUAyHjTBlA6qS86rBzgm2iHkkxDeO45tOSPiUxGijLauK+RfM2qFw29eAUSf4TkCnTKhlxshhR8G1w2OKzGGvuuWkA9GIWtoZjKmDN2PjbYHRUOrCK35zy/0O4VbEsmGHmGD15nFjhkTsAxiaLrvkD12XU1GlNSRlTc4OB8QmCiCqBpgfhnkVH8CB13Vt7Pld/dvoJceO0G2QIhiELmZgPr6cuVs2paQnRw3Tmwva5G31N+sVAxtN/k21mgDJoZHzCfIIqW5j8dWvcllCDlZD/Q==
+[core]
+	excludesfile = ~/.global-gitignore
+	pager = delta
+
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	program = /Applications/1Password.app/Contents/MacOS/op-ssh-sign
+[commit]
+	gpgsign = true
+[mergetool]
+	keepBackup = false
+[init]
+	defaultBranch = master
+
+[push]
+	# Push a new branch without the --set-upstream dance
+	autoSetupRemote = true
+[fetch]
+	# Drop remote-tracking branches whose remote is gone
+	prune = true
+[merge]
+	# Show the common ancestor in conflicts, not just the two sides.
+	# zdiff3 over diff3: same info, but shared lines are hoisted out of the
+	# conflict region instead of being duplicated in it.
+	conflictstyle = zdiff3
+[diff]
+	# Distinguish moved code from genuinely added or removed code
+	colorMoved = default
+
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	light = false
+	side-by-side = true
+	line-numbers = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

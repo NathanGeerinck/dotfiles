@@ -1,0 +1,30 @@
+# Ignored in every repo, so individual projects do not each have to repeat this.
+# Wired up through core.excludesfile in home/.gitconfig.
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.idea
+.vscode
+*.sublime-project
+.*.sw?
+
+# PHP
+.phpunit.result.cache
+.phpunit-watcher-cache.php
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment
+.env
+
+# Claude
+.claude/settings.local.json
