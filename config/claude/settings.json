@@ -7,6 +7,10 @@
     "pr": "",
     "sessionUrl": false
   },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
   "permissions": {
     "defaultMode": "acceptEdits",
     "allow": [
