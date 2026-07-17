@@ -79,6 +79,9 @@ step "Composer packages"
 composer global require laravel/valet || warn "valet install failed"
 "$HOME/.composer/vendor/bin/valet" install || warn "valet setup failed"
 ok "valet processed"
+# The Ploi CLI reads its token from PLOI_API_TOKEN, which .env provides.
+composer global require ploi/cli || warn "ploi cli install failed"
+ok "ploi cli processed"
 
 step "Projects directory"
 mkdir -p "$HOME/Development"

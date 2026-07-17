@@ -10,6 +10,9 @@
 
 # Intilli
 NGROK_AUTHTOKEN_INTILLI="{{ op://Intilli/Ngrok/authtoken }}"
+# The Ploi CLI prefers this over the token it writes to ~/.ploi/config.php, so
+# the token stays in 1Password and `ploi token` never has to run.
+PLOI_API_TOKEN="{{ op://Intilli/ploi.io/api-token }}"
 
 # Tallieu & Tallieu
 # The vault is addressed by ID rather than name: "Tallieu & Tallieu" contains an

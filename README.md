@@ -14,7 +14,7 @@ cd ~/.dotfiles
 bin/install
 ```
 
-The script asks for your password once at the start, then installs the Xcode Command Line Tools, Oh My Zsh, Homebrew, everything in the Brewfile, and Laravel Valet. It prompts before installing Claude Code and before applying the macOS system preferences. It is idempotent, so rerunning it is safe.
+The script asks for your password once at the start, then installs the Xcode Command Line Tools, Oh My Zsh, Homebrew, everything in the Brewfile, Laravel Valet, and the [Ploi CLI](#ploi). It prompts before installing Claude Code and before applying the macOS system preferences. It is idempotent, so rerunning it is safe.
 
 It does leave one thing to you: run `mackup restore` to pull your application preferences back from iCloud.
 
@@ -89,6 +89,8 @@ This needs the 1Password app unlocked with the CLI integration enabled (Settings
 
 One quirk worth knowing: the Tallieu & Tallieu vault is referenced by ID rather than name, because `op` rejects the `&` in "Tallieu & Tallieu" as an illegal character in a secret reference.
 
+A missing field is not a soft failure. `op inject` aborts on the whole template rather than skipping the one line it cannot resolve: it exits 1 and writes nothing, leaving any existing `.env` untouched. So a bad reference does not destroy your secrets, but it does mean the file silently stays stale. Add the field in 1Password first, then add the reference here.
+
 ## Claude Code
 
 `config/claude/` is version controlled and symlinked into `~/.claude`, so skills, agents, and settings survive a machine rebuild. Install or relink it on its own with:
@@ -98,6 +100,52 @@ bin/install-claude
 ```
 
 Add a skill with `npx skills add <owner/repo>` (it lands in `config/claude/skills/`), then commit it. Browse more at [skills.sh](https://skills.sh).
+
+### MCP servers
+
+MCP servers are the one part of the Claude Code setup that cannot be symlinked. Claude Code stores them in `~/.claude.json`, which also holds machine specific state (startup counts, project history, per project notes), so the file is no use in a repo. `bin/install-claude` registers them with `claude mcp add` instead, which gets the same reproducibility without version controlling any of that noise.
+
+Registered right now:
+
+| Server | Transport | Notes |
+|---|---|---|
+| `ploi` | HTTP, `https://ploi.io/api/mcp` | Needs a Ploi Pro plan or higher |
+
+Authenticating is manual and once per machine, because the OAuth flow opens a browser. Start Claude Code, run `/mcp`, select `ploi`, then choose **Authenticate**. The tokens go to the macOS Keychain, so they never touch this repo or `~/.claude.json`.
+
+To add another server, register it with `claude mcp add --scope user ...`, then mirror the command into `bin/install-claude` so a rebuild picks it up.
+
+Be deliberate about which servers you add. Ploi's `get-site-env` tool returns raw `.env` contents, secrets included, to whatever client is connected.
+
+## Ploi
+
+[Ploi](https://ploi.io) hosts the servers, and there are two separate integrations here.
+
+The **CLI** is installed globally by `bin/install` (`composer global require ploi/cli`) and lands on `$PATH` through `~/.composer/vendor/bin`. It needs PHP 8.2 or higher. Useful commands:
+
+```bash
+ploi init          # Link the current directory to a Ploi site
+ploi deploy        # Deploy, optionally streaming the log
+ploi ssh           # SSH into a server
+ploi list          # Show every command
+```
+
+The **MCP server** gives Claude Code the same reach. See [MCP servers](#mcp-servers) above.
+
+They authenticate separately, and neither one shares the other's credentials.
+
+The CLI takes its token from `PLOI_API_TOKEN`, which `.env` provides from 1Password. This is worth knowing because it is not the documented flow: the docs tell you to run `ploi token`, which writes the token in plaintext to `~/.ploi/config.php`. The CLI checks the environment variable first and prefers it, so the token stays in the vault and a rebuild needs no manual step.
+
+Rotating it, or setting it up on a machine that has never had it:
+
+```bash
+# Create a key at https://ploi.io/profile/api-keys, then store it
+op item edit ploi.io --vault Intilli api-token=<token>
+op inject -f -i .env.tpl -o .env
+exec zsh
+```
+
+`op inject` fails on the whole template while that field is absent, so create the field before regenerating. Verify with `ploi server:list`.
 
 ## Custom commands
 

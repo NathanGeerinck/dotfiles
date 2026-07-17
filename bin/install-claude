@@ -34,4 +34,20 @@ link "$CLAUDE_SRC/statusline.sh" "$CLAUDE_DIR/statusline.sh"
 link "$CLAUDE_SRC/skills" "$CLAUDE_DIR/skills"
 link "$CLAUDE_SRC/agents" "$CLAUDE_DIR/agents"
 
+# MCP servers cannot be symlinked. Claude Code keeps them in ~/.claude.json,
+# which also holds machine specific state like startup counts and project
+# history, so registering them through the CLI is what makes them reproducible.
+# OAuth is still a manual step, see the readme.
+if command -v claude >/dev/null 2>&1; then
+  if claude mcp get ploi >/dev/null 2>&1; then
+    ok "ploi MCP server already registered"
+  elif claude mcp add --scope user --transport http ploi https://ploi.io/api/mcp >/dev/null 2>&1; then
+    ok "ploi MCP server registered"
+  else
+    warn "could not register the ploi MCP server"
+  fi
+else
+  warn "claude not on PATH, skipping MCP servers"
+fi
+
 echo "Claude Code setup complete. Restart Claude Code to pick up the changes."
