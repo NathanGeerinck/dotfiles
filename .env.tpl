@@ -8,13 +8,18 @@
 # bin/install does this for you on a new machine. Rerun it yourself after
 # rotating a token in 1Password.
 
-# Intilli
+## Intilli
 NGROK_AUTHTOKEN_INTILLI="{{ op://Intilli/Ngrok/authtoken }}"
+
 # The Ploi CLI prefers this over the token it writes to ~/.ploi/config.php, so
 # the token stays in 1Password and `ploi token` never has to run.
 PLOI_API_TOKEN="{{ op://Intilli/ploi.io/api-token }}"
 
-# Tallieu & Tallieu
+# Bearer token for the intilli.be Nodux MCP server. Referenced at runtime from
+# ~/.claude.json as ${INTILLI_MCP_TOKEN}, so the value stays out of that file.
+INTILLI_MCP_TOKEN="{{ op://Intilli/intilli.be/mcp-token }}"
+
+## Tallieu & Tallieu
 # The vault is addressed by ID rather than name: "Tallieu & Tallieu" contains an
 # "&", which op rejects as an illegal character in a secret reference.
 NGROK_AUTHTOKEN_TNT="{{ op://enpwdmtwnekrxdbriapr3y6yw4/Ngrok/authtoken }}"
