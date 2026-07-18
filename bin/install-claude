@@ -46,6 +46,18 @@ if command -v claude >/dev/null 2>&1; then
   else
     warn "could not register the ploi MCP server"
   fi
+
+  # The token is kept as a ${INTILLI_MCP_TOKEN} reference (single quotes), so it
+  # is not written to ~/.claude.json. Claude Code expands it at runtime from the
+  # shell env, which env.zsh populates from the op-injected .env.
+  if claude mcp get nodux >/dev/null 2>&1; then
+    ok "nodux MCP server already registered"
+  elif claude mcp add --scope user --transport http nodux https://intilli.be/backend/mcp \
+      --header 'Authorization: Bearer ${INTILLI_MCP_TOKEN}' >/dev/null 2>&1; then
+    ok "nodux MCP server registered"
+  else
+    warn "could not register the nodux MCP server"
+  fi
 else
   warn "claude not on PATH, skipping MCP servers"
 fi
