@@ -17,7 +17,7 @@ PLOI_API_TOKEN="{{ op://Intilli/ploi.io/api-token }}"
 
 # Bearer token for the intilli.be Nodux MCP server. Referenced at runtime from
 # ~/.claude.json as ${INTILLI_MCP_TOKEN}, so the value stays out of that file.
-INTILLI_MCP_TOKEN="{{ op://Intilli/intilli.be/mcp-token }}"
+INTILLI_MCP_TOKEN="{{ op://Intilli/4noskpqknmotse7aacyt5k6fqi/mcp-token }}"
 
 ## Tallieu & Tallieu
 # The vault is addressed by ID rather than name: "Tallieu & Tallieu" contains an
