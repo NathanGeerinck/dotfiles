@@ -1,18 +1,10 @@
 {
-  "effortLevel": "xhigh",
-  "tui": "fullscreen",
-  "alwaysThinkingEnabled": true,
   "attribution": {
     "commit": "",
     "pr": "",
     "sessionUrl": false
   },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
-  },
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "Bash(gh:*)",
       "Bash(curl:*)",
@@ -57,6 +49,27 @@
       "Bash(open:*)",
       "WebSearch",
       "WebFetch"
-    ]
+    ],
+    "defaultMode": "acceptEdits"
+  },
+  "model": "opus[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "xhigh",
+  "tui": "fullscreen",
+  "agentPushNotifEnabled": true,
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true
   }
 }
