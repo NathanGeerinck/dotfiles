@@ -85,4 +85,24 @@ else
   warn "claude not on PATH, skipping MCP servers"
 fi
 
+# Claude Code expands the ${VAR} references above from its own process
+# environment. That works under iTerm, where ~/.zshrc has already run, but not
+# when Claude Code is started by a GUI app: launchd gives those no interactive
+# shell, so the Authorization header goes out as the literal string and the
+# server answers 401. This agent publishes the same variables into the launchd
+# session at login. See the MCP servers section of the readme for the tradeoff.
+AGENT_LABEL="be.intilli.mcp-env"
+AGENT_PLIST="$HOME/Library/LaunchAgents/$AGENT_LABEL.plist"
+
+mkdir -p "$HOME/Library/LaunchAgents"
+link "$DOTFILES/macos/$AGENT_LABEL.plist" "$AGENT_PLIST"
+
+# Reload rather than load, so rerunning this picks up an edited plist.
+launchctl bootout "gui/$(id -u)/$AGENT_LABEL" >/dev/null 2>&1 || true
+if launchctl bootstrap "gui/$(id -u)" "$AGENT_PLIST" >/dev/null 2>&1; then
+  ok "$AGENT_LABEL loaded, MCP credentials published to the launchd session"
+else
+  warn "could not load $AGENT_LABEL, it will start at the next login"
+fi
+
 echo "Claude Code setup complete. Restart Claude Code to pick up the changes."
