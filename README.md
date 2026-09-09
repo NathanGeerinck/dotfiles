@@ -27,7 +27,7 @@ Secrets are handled for you, as long as the 1Password app is installed and unloc
 ├── bin/          install, update, install-claude, lib.sh
 ├── config/       Brewfile, claude/, iterm/, phpstorm/
 ├── home/         .zshrc and the files it sources
-├── macos/        set-defaults.sh, .mackup.cfg
+├── macos/        set-defaults.sh, .mackup.cfg, the MCP env LaunchAgent
 └── work/         intilli/, tallieu/
 ```
 
@@ -60,7 +60,7 @@ Git used to be Mackup's. There is a stale `.gitconfig` sitting in the iCloud Mac
 
 ## How the shell loads
 
-`~/.zshrc` is the only entry point, and it sources the rest explicitly in this order:
+`~/.zshrc` is the entry point for shells, and it sources the rest explicitly in this order:
 
 1. `home/env.zsh` exports everything in `.env`.
 2. Oh My Zsh loads, which also runs `compinit`.
@@ -68,6 +68,8 @@ Git used to be Mackup's. There is a stale `.gitconfig` sitting in the iCloud Mac
 4. `home/aliases.zsh` defines the aliases and sources `work/intilli/intilli.zsh` and `work/tallieu/tnt.zsh`.
 
 Order matters in two places. Anything using `compdef` (the `tnt` and `intilli` completions) has to come after Oh My Zsh, and aliases come last so they win over the ones Oh My Zsh plugins define.
+
+It is not the only way into the environment any more. Apps started by launchd never run `~/.zshrc`, so a second path exists for them: `macos/mcp-env.sh`, run at login by a LaunchAgent. It sources `home/env.zsh`, the same file listed above, so the two cannot drift. See [MCP servers](#mcp-servers) for why.
 
 ## Secrets
 
@@ -109,9 +111,29 @@ Registered right now:
 
 | Server | Transport | Notes |
 |---|---|---|
-| `ploi` | HTTP, `https://ploi.io/api/mcp` | Needs a Ploi Pro plan or higher |
+| `ploi` | HTTP, `https://ploi.io/api/mcp` | Needs a Ploi Pro plan or higher. OAuth |
+| `larabug` | HTTP, `https://www.larabug.com/mcp` | OAuth |
+| `nodux` | HTTP, `https://intilli.be/backend/mcp` | Bearer token from `$INTILLI_MCP_TOKEN` |
+| `shortcut` | stdio, `npx @shortcut/mcp` | API token from `$SHORTCUT_KEY_TNT` |
+| `obsidian` | stdio, `npx obsidian-mcp` | Local vault, no credential |
 
-Authenticating is manual and once per machine, because the OAuth flow opens a browser. Start Claude Code, run `/mcp`, select `ploi`, then choose **Authenticate**. The tokens go to the macOS Keychain, so they never touch this repo or `~/.claude.json`.
+Authenticating the OAuth ones is manual and once per machine, because the flow opens a browser. Start Claude Code, run `/mcp`, select the server, then choose **Authenticate**. The tokens go to the macOS Keychain, so they never touch this repo or `~/.claude.json`.
+
+#### Token backed servers and the launchd problem
+
+`nodux` and `shortcut` authenticate with a token rather than OAuth. Those are registered with a `${VAR}` reference instead of a value, so `~/.claude.json` holds `Bearer ${INTILLI_MCP_TOKEN}` and nothing secret. Claude Code expands the reference from its own process environment when it connects.
+
+That works from iTerm, where `~/.zshrc` has already exported everything in `.env`. It does not work when Claude Code is started by a GUI app such as Bloom. Those are launched by launchd with no interactive shell in between, zsh only reads `~/.zshrc` for interactive shells, and there is no `~/.zshenv`. The variable is simply absent, the header goes out as the literal string `Bearer ${INTILLI_MCP_TOKEN}`, and the server answers 401. The stdio case is quieter and worse: the server starts fine under `npx`, so it looks connected, and only the first real API call fails.
+
+`macos/be.intilli.mcp-env.plist` fixes it. At login it runs `macos/mcp-env.sh`, which sources `home/env.zsh` and then `launchctl setenv`s every variable the MCP config references. The list is read out of `~/.claude.json` rather than hardcoded, so registering a server with a new `${VAR}` needs no edit. `bin/install-claude` symlinks the plist into `~/Library/LaunchAgents` and loads it.
+
+**The tradeoff.** Anything `launchctl setenv` publishes is readable by every process running as you, through `launchctl getenv`. That is wider exposure than a variable that only exists inside a shell. It is accepted deliberately, because a GUI launched Claude Code has no other way to see these values. The narrower alternative, putting the exports in `~/.zshenv`, was rejected: it runs for every shell including non interactive ones, and it would add a second shell entry point next to `~/.zshrc`, which is exactly the indirection [How the shell loads](#how-the-shell-loads) exists to avoid. Only tokens already registered in `~/.claude.json` are published, so the exposure never grows past what Claude Code itself is holding.
+
+To check it without rebooting, print the length and never the value:
+
+```
+launchctl getenv INTILLI_MCP_TOKEN | wc -c
+```
 
 To add another server, register it with `claude mcp add --scope user ...`, then mirror the command into `bin/install-claude` so a rebuild picks it up.
 

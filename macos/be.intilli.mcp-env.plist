@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>be.intilli.mcp-env</string>
+
+	<!-- launchd does not expand ~ or $HOME in ProgramArguments, and this plist is
+	     symlinked out of the repo, so the path cannot be baked in. Going through
+	     bash lets $HOME expand at launch and keeps the file machine agnostic. -->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>exec "$HOME/.dotfiles/macos/mcp-env.sh"</string>
+	</array>
+
+	<key>RunAtLoad</key>
+	<true/>
+
+	<!-- The script prints variable names and character counts, never values. -->
+	<key>StandardOutPath</key>
+	<string>/tmp/be.intilli.mcp-env.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/be.intilli.mcp-env.log</string>
+</dict>
+</plist>
