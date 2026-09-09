@@ -18,6 +18,7 @@ brew 'grep'
 brew 'jq'
 brew 'mackup'
 brew 'mas'
+brew 'poppler'    # pdftotext / pdftoppm, for reading client PDFs (incl. scanned ones)
 brew 'zsh'
 brew 'zsh-completions'
 
