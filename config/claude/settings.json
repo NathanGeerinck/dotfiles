@@ -57,19 +57,26 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true,
+    "dry-skills@dry": true
+  },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
         "source": "github",
         "repo": "anthropics/claude-plugins-official"
       }
+    },
+    "dry": {
+      "source": {
+        "source": "github",
+        "repo": "TallieuTallieu/dry-skills"
+      }
     }
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "tui": "fullscreen",
-  "agentPushNotifEnabled": true,
-  "enabledPlugins": {
-    "figma@claude-plugins-official": true
-  }
+  "agentPushNotifEnabled": true
 }
