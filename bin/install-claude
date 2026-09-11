@@ -67,6 +67,18 @@ if command -v claude >/dev/null 2>&1; then
     warn "could not register the larabug MCP server"
   fi
 
+  # Ray serves this from the desktop app itself, on a port it opens at launch,
+  # so there is nothing to install and no token to keep out of the way. It only
+  # answers while Ray is running; Claude Code reports it as failed otherwise,
+  # which is the honest answer.
+  if claude mcp get ray >/dev/null 2>&1; then
+    ok "ray MCP server already registered"
+  elif claude mcp add --scope user --transport http ray http://localhost:2411/mcp >/dev/null 2>&1; then
+    ok "ray MCP server registered"
+  else
+    warn "could not register the ray MCP server"
+  fi
+
   # Same ${VAR} trick as nodux: the API token stays out of ~/.claude.json and is
   # expanded at runtime from the shell env.
   # Note: @shortcut/mcp is deprecated in favour of the hosted server at
