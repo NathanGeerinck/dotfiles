@@ -116,6 +116,7 @@ Registered right now:
 | `nodux` | HTTP, `https://intilli.be/backend/mcp` | Bearer token from `$INTILLI_MCP_TOKEN` |
 | `shortcut` | stdio, `npx @shortcut/mcp` | API token from `$SHORTCUT_KEY_TNT` |
 | `obsidian` | stdio, `npx obsidian-mcp` | Local vault, no credential |
+| `ray` | HTTP, `http://localhost:2411/mcp` | Served by the Ray desktop app, no credential. Only answers while Ray is open |
 
 Authenticating the OAuth ones is manual and once per machine, because the flow opens a browser. Start Claude Code, run `/mcp`, select the server, then choose **Authenticate**. The tokens go to the macOS Keychain, so they never touch this repo or `~/.claude.json`.
 
