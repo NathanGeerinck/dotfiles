@@ -25,6 +25,7 @@ source "$DOTFILES/home/path.zsh"
 source "$DOTFILES/home/aliases.zsh"
 source "$DOTFILES/home/functions.zsh"
 source "$DOTFILES/home/db.zsh"
+source "$DOTFILES/home/bitbucket.zsh"
 
 # Modern CLI tools, each guarded so a machine without them still gets a shell.
 # zoxide tracks the directories you visit: `z tnt` jumps to the best match, `zi`

@@ -24,3 +24,17 @@ INTILLI_MCP_TOKEN="{{ op://Intilli/4noskpqknmotse7aacyt5k6fqi/mcp-token }}"
 # "&", which op rejects as an illegal character in a secret reference.
 NGROK_AUTHTOKEN_TNT="{{ op://enpwdmtwnekrxdbriapr3y6yw4/Ngrok/authtoken }}"
 SHORTCUT_KEY_TNT="{{ op://enpwdmtwnekrxdbriapr3y6yw4/Shortcut/apikey }}"
+
+# bin/bb authenticates with Basic auth, so it needs the Atlassian account email
+# next to the token. Both come from one API Credential item, where `username`
+# holds the email and `credential` the token. See the Bitbucket section of the
+# readme for how to create it.
+BITBUCKET_EMAIL_TNT="{{ op://enpwdmtwnekrxdbriapr3y6yw4/Bitbucket API Token/username }}"
+BITBUCKET_TOKEN_TNT="{{ op://enpwdmtwnekrxdbriapr3y6yw4/Bitbucket API Token/credential }}"
+
+## Personal
+# The second Bitbucket account, used for LaraBug testing. bin/bb picks between
+# the two by looking at the workspace in the git remote: tallieu gets the T&T
+# token, everything else gets this one.
+BITBUCKET_EMAIL_PERSONAL="{{ op://Personal/Bitbucket API Token/username }}"
+BITBUCKET_TOKEN_PERSONAL="{{ op://Personal/Bitbucket API Token/credential }}"

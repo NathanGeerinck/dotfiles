@@ -54,6 +54,12 @@ if [ -e "$HOME/.mackup.cfg" ]; then
 else
   link "$DOTFILES/macos/.mackup.cfg" "$HOME/.mackup.cfg"
 fi
+# bb is a command rather than a config file, so it belongs on $PATH instead of
+# in $HOME. home/path.zsh already puts ~/.local/bin there, and linking it rather
+# than relying on a shell function means Claude Code and other non interactive
+# shells can run it too.
+mkdir -p "$HOME/.local/bin"
+link "$DOTFILES/bin/bb" "$HOME/.local/bin/bb"
 
 step "Homebrew packages"
 brew update

@@ -24,7 +24,7 @@ Secrets are handled for you, as long as the 1Password app is installed and unloc
 
 ```
 ~/.dotfiles
-├── bin/          install, update, install-claude, lib.sh
+├── bin/          install, update, install-claude, bb, lib.sh
 ├── config/       Brewfile, claude/, iterm/, phpstorm/
 ├── home/         .zshrc and the files it sources
 ├── macos/        set-defaults.sh, .mackup.cfg, the MCP env LaunchAgent
@@ -41,6 +41,7 @@ Secrets are handled for you, as long as the 1Password app is installed and unloc
 | `~/.gitconfig` | `home/.gitconfig` |
 | `~/.global-gitignore` | `home/.global-gitignore` |
 | `~/.mackup.cfg` | `macos/.mackup.cfg` (only if absent, see below) |
+| `~/.local/bin/bb` | `bin/bb` |
 | `~/.claude/CLAUDE.md` | `config/claude/CLAUDE.md` |
 | `~/.claude/laravel-php-guidelines.md` | `config/claude/laravel-php-guidelines.md` |
 | `~/.claude/settings.json` | `config/claude/settings.json` |
@@ -66,8 +67,9 @@ Git used to be Mackup's. There is a stale `.gitconfig` sitting in the iCloud Mac
 2. Oh My Zsh loads, which also runs `compinit`.
 3. `home/path.zsh` sets up `$PATH`.
 4. `home/aliases.zsh` defines the aliases and sources `work/intilli/intilli.zsh` and `work/tallieu/tnt.zsh`.
+5. `home/functions.zsh`, `home/db.zsh` and `home/bitbucket.zsh` add the remaining commands and the `bb` completion.
 
-Order matters in two places. Anything using `compdef` (the `tnt` and `intilli` completions) has to come after Oh My Zsh, and aliases come last so they win over the ones Oh My Zsh plugins define.
+Order matters in two places. Anything using `compdef` (the `tnt`, `intilli` and `bb` completions) has to come after Oh My Zsh, and aliases come last so they win over the ones Oh My Zsh plugins define.
 
 It is not the only way into the environment any more. Apps started by launchd never run `~/.zshrc`, so a second path exists for them: `macos/mcp-env.sh`, run at login by a LaunchAgent. It sources `home/env.zsh`, the same file listed above, so the two cannot drift. See [MCP servers](#mcp-servers) for why.
 
@@ -169,6 +171,72 @@ exec zsh
 ```
 
 `op inject` fails on the whole template while that field is absent, so create the field before regenerating. Verify with `ploi server:list`.
+
+## Bitbucket
+
+T&T keeps its repositories on Bitbucket, and `bin/bb` is the client for them. It covers the pull request work `gh` does on GitHub, with `bb api` as the escape hatch for every endpoint that has no wrapper yet.
+
+```bash
+bb pr list                            # Open pull requests for this repository
+bb pr view 42
+bb pr diff 42
+bb pr create -t "Fix the importer"    # From the current branch
+bb pr comment 42 "Deployed to staging"
+bb pr merge 42 --strategy squash
+bb api /repositories/tallieu/dry/refs/branches | jq -r '.values[].name'
+bb help                               # Show every command and flag
+```
+
+Git itself needs none of this. Cloning, pushing and pulling go over SSH, authenticated by the 1Password agent, which is why `tnt clone <repo>` works without a token anywhere in sight. `bb` exists only for the parts of Bitbucket that sit behind the REST API.
+
+Nothing here touches `~/.ssh/config`, which Mackup syncs from iCloud rather than this repo. Worth knowing if you ever read it: the SourceTree generated `NathanGeerinck-Bitbucket` block in there points its `IdentityFile` at `/Users/nathangeerinck/.ssh/...`, a path from an older machine that no longer exists. It is dead config, and it goes unnoticed because the `Host *` block routes every key through the 1Password agent anyway.
+
+### Why a script and not an MCP server
+
+There is no official Bitbucket MCP server. Every one on npm is community built, so registering one means a third party package gets whatever its token can reach, over every repository, refreshed on each `npx` run. A script in this repo is reviewable, pinned by git, and needs nothing beyond curl and jq.
+
+### Two accounts
+
+Two Bitbucket accounts are in play, the T&T one and a personal one used for LaraBug testing. `bb` chooses by reading the workspace out of the git remote: the `tallieu` workspace authenticates as T&T, anything else as personal, which is also the fallback outside a repository. So the common case needs no flag. Override with `-a tnt` or `-a personal`, and reach another repository with `-R <workspace>/<repo>`.
+
+| Account | Email | Token |
+|---|---|---|
+| `tnt` | `$BITBUCKET_EMAIL_TNT` | `$BITBUCKET_TOKEN_TNT` |
+| `personal` | `$BITBUCKET_EMAIL_PERSONAL` | `$BITBUCKET_TOKEN_PERSONAL` |
+
+`bb` reads those from the environment, and falls back to sourcing `.env` itself when they are absent. That second path is what makes it work under Claude Code in Bloom, which is started by a GUI app and so never ran `~/.zshrc`. It is the same problem [MCP servers](#token-backed-servers-and-the-launchd-problem) solves with a LaunchAgent, but a script can simply read the file, so there is nothing to publish into the launchd session.
+
+### Creating a token
+
+Atlassian removed Bitbucket app passwords, so these are Atlassian API tokens with Bitbucket scopes. Create one at [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens) with **Create API token with scopes**, choose Bitbucket, and grant at least:
+
+| Scope | Needed for |
+|---|---|
+| `read:repository:bitbucket` | `bb repo view` and reading diffs |
+| `read:pullrequest:bitbucket` | `bb pr list`, `bb pr view` |
+| `write:pullrequest:bitbucket` | `bb pr create`, `comment`, `approve`, `merge` |
+| `read:account` | `bb whoami`, nothing else |
+
+Authentication is Basic auth with the Atlassian account email as the user, which is why `.env` carries an email next to each token. Both live in one 1Password item, `username` for the email and `credential` for the token:
+
+```bash
+# T&T, in the vault addressed by ID because of the & in its name
+op item create --category "API Credential" \
+  --vault enpwdmtwnekrxdbriapr3y6yw4 --title "Bitbucket API Token" \
+  username=nathan@tnt.be credential=<token>
+
+# The personal account, same command against the Personal vault
+op item create --category "API Credential" \
+  --vault Personal --title "Bitbucket API Token" \
+  username=<email> credential=<token>
+
+op inject -f -i .env.tpl -o .env
+exec zsh
+```
+
+Create both items before regenerating. `op inject` aborts on the whole template when one reference fails to resolve, so a missing item leaves the old `.env` in place rather than a half written one. Verify with `bb whoami`, which prints the account it picked next to the user it authenticated as.
+
+The token reaches curl through a config file on stdin rather than through `-u`, so it never shows up in the process list. There is also a stale `T&T Bitbucket App Password` item in the Intilli vault that still holds a 36 character app password. It answers 401 on every endpoint now and can go once the new tokens work.
 
 ## Custom commands
 

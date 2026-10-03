@@ -1,0 +1,425 @@
+#!/bin/bash
+#
+# A small Bitbucket Cloud client, covering the pull request work that `gh` does
+# on GitHub. Bitbucket has no official CLI and every MCP server for it on npm is
+# community built, so this talks to the REST API directly rather than handing a
+# token to a third party package.
+#
+# Authentication is Basic auth with an Atlassian account email and an API token
+# that carries Bitbucket scopes, both read from .env. Two accounts are wired up,
+# and which one is used follows from the workspace in the git remote, so the
+# common case needs no flag. See resolve_account.
+#
+# `set -u` is deliberately left off: /bin/bash on macOS is still 3.2, where an
+# empty array expansion under -u aborts the script.
+
+set -eo pipefail
+
+API="https://api.bitbucket.org/2.0"
+
+fail() {
+  echo "bb: $1" >&2
+  exit 1
+}
+
+for tool in curl jq; do
+  command -v "$tool" >/dev/null 2>&1 || fail "$tool is required"
+done
+
+usage() {
+  cat <<'EOF'
+A small Bitbucket Cloud client, the gh equivalent for bitbucket.org.
+
+Usage: bb <command> [args]
+
+Commands:
+  whoami                       Show the authenticated user and the account used
+  repo view                    Show the current repository
+  pr list [--state STATE]      List pull requests, open ones by default
+  pr view <id>                 Show one pull request
+  pr diff <id>                 Show the diff of a pull request
+  pr create [flags]            Open a pull request from the current branch
+  pr comment <id> <text>       Comment on a pull request
+  pr approve <id>              Approve a pull request
+  pr merge <id> [--strategy S] Merge a pull request
+  api <path> [flags]           Call any endpoint, path relative to /2.0
+  help                         Show this message
+
+Global flags:
+  -R, --repo <workspace/repo>  Act on this repository instead of the git remote
+  -a, --account <name>         Authenticate as tnt or personal, instead of the
+                               account the workspace implies
+
+pr create flags:
+  -t, --title <title>          Defaults to the subject of the last commit
+  -b, --body <text>            Description, empty by default
+  -B, --target <branch>        Defaults to the repository's main branch
+
+pr merge flags:
+      --strategy <strategy>    merge_commit, squash or fast_forward
+
+api flags:
+  -X, --method <verb>          Defaults to GET, or POST when there is a body
+  -d, --data <json>            Request body
+
+Examples:
+  bb pr list
+  bb pr create -t "Fix the importer" -B master
+  bb api /repositories/tallieu/dry/refs/branches | jq -r '.values[].name'
+EOF
+}
+
+# .env holds the tokens, generated from .env.tpl by `op inject`. An interactive
+# shell has already exported them, but a process started by launchd or by Claude
+# Code in Bloom has not, so read the file when a variable is missing.
+load_env() {
+  local file="${DOTFILES:-$HOME/.dotfiles}/.env"
+
+  [ -f "$file" ] || return 0
+
+  set -a
+  # shellcheck disable=SC1090
+  . "$file"
+  set +a
+}
+
+# Resolve $email and $token for an account name.
+credentials() {
+  local suffix email_var token_var from_env_email from_env_token
+
+  suffix="$(printf '%s' "$1" | tr '[:lower:]-' '[:upper:]_')"
+  email_var="BITBUCKET_EMAIL_$suffix"
+  token_var="BITBUCKET_TOKEN_$suffix"
+
+  # Read what the environment carries before touching .env, because sourcing it
+  # overwrites these names and a one off override on the command line has to win.
+  from_env_email="${!email_var}"
+  from_env_token="${!token_var}"
+
+  if [ -z "$from_env_email" ] || [ -z "$from_env_token" ]; then
+    load_env
+  fi
+
+  email="${from_env_email:-${!email_var}}"
+  token="${from_env_token:-${!token_var}}"
+
+  [ -n "$token" ] || fail "\$$token_var is not set, see the Bitbucket section of the dotfiles readme"
+  [ -n "$email" ] || fail "\$$email_var is not set, see the Bitbucket section of the dotfiles readme"
+}
+
+# workspace/repo of the Bitbucket remote, if this is one. Matches both the SSH
+# and the HTTPS form of the URL.
+remote_slug() {
+  local url
+
+  url="$(git remote get-url "${BB_REMOTE:-origin}" 2>/dev/null)" || return 1
+  [[ "$url" =~ bitbucket\.org[:/]+([^/]+)/([^/]+)$ ]] || return 1
+
+  printf '%s/%s' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]%.git}"
+}
+
+# Which workspace belongs to which account in .env. Everything outside the T&T
+# workspace is personal, which is also the fallback when there is no remote to
+# read, so `bb api` keeps working from any directory.
+account_for_workspace() {
+  case "$1" in
+    tallieu | tallieutallieu) echo "tnt" ;;
+    *) echo "personal" ;;
+  esac
+}
+
+resolve_account() {
+  local slug
+
+  [ -n "$account" ] && { echo "$account"; return; }
+  [ -n "${BB_ACCOUNT}" ] && { echo "$BB_ACCOUNT"; return; }
+
+  if [ -n "$repo" ]; then
+    slug="$repo"
+  else
+    slug="$(remote_slug || true)"
+  fi
+
+  if [ -n "$slug" ]; then
+    account_for_workspace "${slug%%/*}"
+  else
+    echo "personal"
+  fi
+}
+
+resolve_repo() {
+  [ -n "$repo" ] && { echo "$repo"; return; }
+
+  remote_slug || fail "not in a Bitbucket repository, pass -R <workspace>/<repo>"
+}
+
+# The credentials go in through a curl config file on stdin rather than through
+# -u, so the token never shows up in the process list.
+#
+# The HTTP status comes back appended to the body by --write-out rather than
+# through --fail-with-body, which only reports "curl exited 22" and leaves the
+# status itself out of reach. Splitting it off here means a failure can name the
+# code, the endpoint, and whatever the API said about it.
+request() {
+  local method="$1" path="$2" body="$3" accept="$4"
+  local url response status code payload message body_file=""
+  local -a args
+
+  case "$path" in
+    http*) url="$path" ;;
+    /*) url="$API$path" ;;
+    *) url="$API/$path" ;;
+  esac
+
+  args=(--silent --show-error --location
+    --request "$method" --header "Accept: $accept" --write-out '\n%{http_code}')
+
+  if [ -n "$body" ]; then
+    body_file="$(mktemp -t bb)"
+    printf '%s' "$body" >"$body_file"
+    args=("${args[@]}" --header "Content-Type: application/json" --data "@$body_file")
+  fi
+
+  set +e
+  response="$(printf 'user = "%s:%s"\nurl = "%s"\n' "$email" "$token" "$url" | curl -K - "${args[@]}")"
+  status=$?
+  set -e
+
+  [ -n "$body_file" ] && rm -f "$body_file"
+
+  [ "$status" -eq 0 ] || fail "curl exited $status for $method ${url#$API}"
+
+  code="${response##*$'\n'}"
+  payload="${response%$'\n'*}"
+
+  case "$code" in
+    2*)
+      printf '%s' "$payload"
+      ;;
+    401 | 403)
+      message="$(printf '%s' "$payload" | jq -r '.error.message // empty' 2>/dev/null || true)"
+      [ -n "$message" ] || message="check the token and its scopes"
+      fail "$code on $method ${url#$API}: $message"
+      ;;
+    *)
+      message="$(printf '%s' "$payload" | jq -r '.error.message // empty' 2>/dev/null || true)"
+      [ -n "$message" ] || message="$(printf '%s' "$payload" | head -c 300)"
+      [ -n "$message" ] || message="no response body"
+      fail "$code on $method ${url#$API}: $message"
+      ;;
+  esac
+}
+
+get() { request GET "$1" "" "application/json"; }
+post() { request POST "$1" "${2}" "application/json"; }
+
+whoami_cmd() {
+  # /user needs the read:account scope. A token with only repository scopes
+  # authenticates fine but cannot read the profile behind it.
+  get "/user" | jq -r --arg account "$(resolve_account)" --arg email "$email" \
+    '"\(.display_name) (\(.nickname // .username)) as \($account), \($email)"'
+}
+
+repo_view() {
+  get "/repositories/$(resolve_repo)" | jq -r '
+    "\(.full_name)  \(.mainbranch.name)",
+    (.description // "(no description)"),
+    .links.html.href
+  '
+}
+
+pr_list() {
+  local state="OPEN" out
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --state) state="$2"; shift 2 ;;
+      -*) fail "unknown flag $1" ;;
+      *) fail "unexpected argument $1" ;;
+    esac
+  done
+
+  state="$(printf '%s' "$state" | tr '[:lower:]' '[:upper:]')"
+
+  out="$(get "/repositories/$(resolve_repo)/pullrequests?state=$state&pagelen=50" |
+    jq -r '.values[] | "#\(.id)\t\(.state)\t\(.title)\t\(.source.branch.name) -> \(.destination.branch.name)\t\(.author.display_name)"')"
+
+  if [ -z "$out" ]; then
+    echo "no pull requests with state $state"
+    return
+  fi
+
+  printf '%s\n' "$out" | column -t -s "$(printf '\t')"
+}
+
+pr_view() {
+  [ -n "$1" ] || fail "a pull request id is required"
+
+  get "/repositories/$(resolve_repo)/pullrequests/$1" | jq -r '
+    "#\(.id)  \(.title)",
+    "\(.state)  \(.author.display_name)  \(.source.branch.name) -> \(.destination.branch.name)",
+    "approved by: \([.participants[] | select(.approved) | .user.display_name] | if length == 0 then "nobody" else join(", ") end)",
+    .links.html.href,
+    "",
+    (if (.description // "") == "" then "(no description)" else .description end)
+  '
+}
+
+pr_diff() {
+  [ -n "$1" ] || fail "a pull request id is required"
+
+  # The diff endpoint answers text, not JSON, and redirects to a second URL,
+  # which --location in request already follows.
+  request GET "/repositories/$(resolve_repo)/pullrequests/$1/diff" "" "*/*"
+  echo
+}
+
+pr_create() {
+  local title="" body="" target="" slug branch payload
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -t | --title) title="$2"; shift 2 ;;
+      -b | --body) body="$2"; shift 2 ;;
+      -B | --target) target="$2"; shift 2 ;;
+      -*) fail "unknown flag $1" ;;
+      *) fail "unexpected argument $1" ;;
+    esac
+  done
+
+  slug="$(resolve_repo)"
+
+  # symbolic-ref rather than rev-parse, because it still answers on a branch
+  # that has no commits yet, where rev-parse only reports a missing HEAD.
+  branch="$(git symbolic-ref --short HEAD 2>/dev/null)" ||
+    fail "no branch to open a pull request from, HEAD is detached or this is not a git repository"
+
+  [ -n "$title" ] || title="$(git log -1 --pretty=%s 2>/dev/null)" ||
+    fail "no commits here to take a title from, pass -t <title>"
+  [ -n "$target" ] || target="$(get "/repositories/$slug" | jq -r '.mainbranch.name')"
+
+  payload="$(jq -n --arg title "$title" --arg body "$body" --arg source "$branch" --arg target "$target" \
+    '{title: $title, description: $body, source: {branch: {name: $source}}, destination: {branch: {name: $target}}}')"
+
+  post "/repositories/$slug/pullrequests" "$payload" |
+    jq -r '"#\(.id)  \(.title)", .links.html.href'
+}
+
+pr_comment() {
+  local id="$1" text="$2" payload
+
+  [ -n "$id" ] || fail "a pull request id is required"
+  [ -n "$text" ] || fail "a comment is required"
+
+  payload="$(jq -n --arg text "$text" '{content: {raw: $text}}')"
+
+  post "/repositories/$(resolve_repo)/pullrequests/$id/comments" "$payload" |
+    jq -r '.links.html.href'
+}
+
+pr_approve() {
+  [ -n "$1" ] || fail "a pull request id is required"
+
+  post "/repositories/$(resolve_repo)/pullrequests/$1/approve" "" |
+    jq -r '"approved by \(.user.display_name)"'
+}
+
+pr_merge() {
+  local id="$1" strategy="merge_commit" payload
+  shift || true
+
+  [ -n "$id" ] || fail "a pull request id is required"
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --strategy) strategy="$2"; shift 2 ;;
+      -*) fail "unknown flag $1" ;;
+      *) fail "unexpected argument $1" ;;
+    esac
+  done
+
+  payload="$(jq -n --arg strategy "$strategy" '{merge_strategy: $strategy}')"
+
+  post "/repositories/$(resolve_repo)/pullrequests/$id/merge" "$payload" |
+    jq -r '"\(.state)  \(.links.html.href)"'
+}
+
+api_cmd() {
+  local method="" data="" path=""
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -X | --method) method="$2"; shift 2 ;;
+      -d | --data) data="$2"; shift 2 ;;
+      -*) fail "unknown flag $1" ;;
+      *) path="$1"; shift ;;
+    esac
+  done
+
+  [ -n "$path" ] || fail "a path is required, for example /user"
+
+  if [ -z "$method" ]; then
+    if [ -n "$data" ]; then method="POST"; else method="GET"; fi
+  fi
+
+  request "$method" "$path" "$data" "application/json"
+  echo
+}
+
+# Global flags are pulled out first so they can sit anywhere in the line, the
+# way gh accepts them.
+account=""
+repo=""
+args=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -a | --account) account="$2"; shift 2 ;;
+    -R | --repo) repo="$2"; shift 2 ;;
+    *) args=("${args[@]}" "$1"); shift ;;
+  esac
+done
+
+set -- "${args[@]}"
+
+command="${1:-help}"
+[ $# -gt 0 ] && shift
+
+case "$command" in
+  help | -h | --help)
+    usage
+    ;;
+  whoami)
+    credentials "$(resolve_account)"
+    whoami_cmd
+    ;;
+  repo)
+    credentials "$(resolve_account)"
+    case "${1:-view}" in
+      view) repo_view ;;
+      *) fail "unknown repo command '$1', only 'view' exists" ;;
+    esac
+    ;;
+  pr)
+    subcommand="${1:-}"
+    [ $# -gt 0 ] && shift
+    credentials "$(resolve_account)"
+    case "$subcommand" in
+      list) pr_list "$@" ;;
+      view) pr_view "$1" ;;
+      diff) pr_diff "$1" ;;
+      create) pr_create "$@" ;;
+      comment) pr_comment "$1" "$2" ;;
+      approve) pr_approve "$1" ;;
+      merge) pr_merge "$@" ;;
+      *) fail "unknown pr command '$subcommand', run 'bb help'" ;;
+    esac
+    ;;
+  api)
+    credentials "$(resolve_account)"
+    api_cmd "$@"
+    ;;
+  *)
+    fail "unknown command '$command', run 'bb help'"
+    ;;
+esac
